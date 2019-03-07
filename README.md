@@ -4,7 +4,7 @@ Peter the Great St.Petersburg Polytechnic University, 4th grade.
 
 Lab 4.
 
-Description in Russian:
+## Description in Russian:
 
 Цель работы
 Исследование архитектуры подсистемы безопасности и механизмов контроля доступа ОС Windows
