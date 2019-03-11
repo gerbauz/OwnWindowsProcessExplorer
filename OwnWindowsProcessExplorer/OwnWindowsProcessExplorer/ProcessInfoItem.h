@@ -9,7 +9,8 @@ class ProcessInfoItem
 private:
 
 	friend class ProcessInfo;
-	//TODO: add  DEP, ASLR
+	//bool						DEP_usage;
+	//bool						ASLR_usage;
 	//TODO: add type_of_process (x86/x64)
 	//DWORD						owner_sid_;
 	//DWORD						parent_pid_;
