@@ -15,7 +15,9 @@ public:
 	ProcessInfo();
 	~ProcessInfo();
 
+	std::string WsToCommonString(WCHAR * wcharstring);
 	void print_process_list(); // TODO: delete this functionality in advance
 	void make_process_list();
 	//void make_dll_list();
 };
+

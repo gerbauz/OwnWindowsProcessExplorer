@@ -1,9 +1,9 @@
 #include "ProcessInfoItem.h"
 
-//void ProcessInfoItem::add_to_dll_list(std::string dll_name)
-//{
-//	dll_list_.push_back(dll_name);
-//}
+void ProcessInfoItem::add_to_dll_list(std::string dll_name)
+{
+	dll_list_.push_back(dll_name);
+}
 
 ProcessInfoItem::ProcessInfoItem(
 	//DWORD owner_sid,
