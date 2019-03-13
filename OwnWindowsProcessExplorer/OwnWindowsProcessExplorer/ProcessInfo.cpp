@@ -17,7 +17,7 @@ std::string ProcessInfo::WsToCommonString(WCHAR * wcharstring)
 void ProcessInfo::print_process_list()
 {
 	setlocale(LC_ALL, "Russian");
-	for (int i = 0; i < process_list.size(); i++)
+	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
 	{
 		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
 		std::cout << " PATH:" << process_list[i]->file_path_;
@@ -59,7 +59,7 @@ void ProcessInfo::create_vector()
 	Process32First(hSnapshot, &peProcessEntry);
 
 	do {
-		
+
 		std::unique_ptr<ProcessInfoItem> new_process_item = std::make_unique<ProcessInfoItem>(
 			peProcessEntry.th32ParentProcessID,
 			peProcessEntry.th32ProcessID,
@@ -93,12 +93,12 @@ void ProcessInfo::create_vector()
 
 void ProcessInfo::fill_path()
 {
-	for (int i = 0; i < process_list.size(); i++)
+	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
 	{
 		HANDLE hProcess;
 
 		hProcess = OpenProcess(
-			PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,
+			PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
 			FALSE,
 			process_list[i]->pid_);
 
@@ -118,7 +118,7 @@ void ProcessInfo::fill_path()
 			szExeName,
 			sizeof(szExeName) / sizeof(TCHAR)
 		);
-		
+
 		process_list[i]->file_path_ = WsToCommonString(szExeName);
 		CloseHandle(hProcess);
 	}
@@ -126,11 +126,11 @@ void ProcessInfo::fill_path()
 
 void ProcessInfo::fill_parent_name()
 {
-	for (int i = 0; i < process_list.size(); i++)
+	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
 	{
 		DWORD parent_pid = process_list[i]->parent_pid_;
 
-		for (int j = 0; j < process_list.size(); j++)
+		for (int j = 0; j < static_cast<int>(process_list.size()); j++)
 		{
 			if (process_list[j]->pid_ == parent_pid)
 			{
@@ -138,16 +138,16 @@ void ProcessInfo::fill_parent_name()
 				break;
 			}
 
-			if (j == process_list.size()-1)
+			if (j == process_list.size() - 1)
 				process_list[i]->parent_name_ = "<Non-existent Process>";
 
-		}	
+		}
 	}
 }
 
 void ProcessInfo::fill_owner()
 {
-	for (int i = 0; i < process_list.size(); i++)
+	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
 	{
 		HANDLE hProcess;
 
@@ -158,7 +158,7 @@ void ProcessInfo::fill_owner()
 
 		if (hProcess == NULL)
 		{
-			//continue;
+			continue;
 			//ErrorExit(TEXT("OpenProcess"));
 			//return;
 		}
@@ -170,11 +170,11 @@ void ProcessInfo::fill_owner()
 		DWORD dwInfoBufferSize, dwAccountSize = 200, dwDomainSize = 200;
 		SID_NAME_USE snu;
 
-	
+
 		OpenProcessToken(hProcess, TOKEN_READ, &hAccessToken);
 
 		GetTokenInformation(hAccessToken, TokenUser, InfoBuffer, 1000, &dwInfoBufferSize);
-		
+
 		LookupAccountSid(NULL, pTokenUser->User.Sid, szAccountName, &dwAccountSize,
 			szDomainName, &dwDomainSize, &snu);
 
