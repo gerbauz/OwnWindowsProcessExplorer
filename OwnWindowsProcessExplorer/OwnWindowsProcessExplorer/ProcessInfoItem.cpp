@@ -57,7 +57,7 @@ void ProcessInfoItem::add_to_dll_list(std::string dll_name)
 
 ProcessInfoItem::ProcessInfoItem(
 	//DWORD owner_sid,
-	//DWORD parent_pid,
+	DWORD parent_pid,
 	DWORD pid,
 	//std::string file_path,
 	//std::string owner_name,
@@ -66,7 +66,7 @@ ProcessInfoItem::ProcessInfoItem(
 	//std::vector<std::string> dll_list
 ) :
 	//owner_sid_(owner_sid),
-	//parent_pid_(parent_pid),
+	parent_pid_(parent_pid),
 	pid_(pid),
 	//file_path_(file_path),
 	//owner_name_(owner_name),

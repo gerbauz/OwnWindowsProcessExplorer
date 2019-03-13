@@ -4,7 +4,9 @@
 #include <psapi.h>
 #include <iostream>
 #include <tlhelp32.h>
-#include <vector>
+#include <vector>]
+#include <sddl.h>
+#include <atlstr.h>
 #include <memory>
 
 class ProcessInfo
@@ -21,8 +23,10 @@ public:
 	std::string WsToCommonString(WCHAR * wcharstring);
 	void print_process_list(); // TODO: delete this functionality in advance
 	void make_process_list();
-	void fill_pid_name();
+	void create_vector();
 	void fill_path();
+	void fill_parent_name();
+	void fill_owner();
 	//void make_dll_list();
 };
 

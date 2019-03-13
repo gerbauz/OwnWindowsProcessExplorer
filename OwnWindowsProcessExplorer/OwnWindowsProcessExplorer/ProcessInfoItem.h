@@ -19,7 +19,8 @@ private:
 	//bool							DEP_usage;
 	//bool							ASLR_usage;
 	int 							type_of_process;
-	DWORD							owner_sid_;
+	PSID							owner_sid_;
+	std::string						owner_sid_string_;
 	DWORD							parent_pid_;
 	DWORD							pid_;
 	std::string						file_path_;
@@ -38,7 +39,7 @@ public:
 
 	ProcessInfoItem(
 		//DWORD owner_sid,
-		//DWORD parent_pid,
+		DWORD parent_pid,
 		DWORD pid,
 		//std::string	file_path,
 		//std::string owner_name,

@@ -16,29 +16,34 @@ std::string ProcessInfo::WsToCommonString(WCHAR * wcharstring)
 
 void ProcessInfo::print_process_list()
 {
-	for (std::vector<std::unique_ptr<ProcessInfoItem>>::iterator it = process_list.begin(); it != process_list.end(); ++it)
+	setlocale(LC_ALL, "Russian");
+	for (int i = 0; i < process_list.size(); i++)
 	{
-		std::cout << "ID: " << (*it)->pid_ << ' ' << "Name: " << (*it)->process_name_ <<" PATH:"<<(*it)->file_path_<<std::endl;
-		if (!(*it)->dll_list_.empty())
+		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
+		std::cout << " PATH:" << process_list[i]->file_path_;
+		std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
+		std::cout << " PARENT NAME:" << process_list[i]->parent_name_;
+		std::cout << " OWNER NAME: " << process_list[i]->owner_name_;
+		std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
+
+		/*if (!(process_list[i]->dll_list_.empty()))
 		{
-			//std::cout << "DLLs:" << std::endl;
-			//for (std::vector<std::string>::iterator sub_it = (*it)->dll_list_.begin(); sub_it != (*it)->dll_list_.end(); ++sub_it)
-			//	std::cout << *sub_it << std::endl;
-		}
+			std::cout << "DLLs:" << std::endl;
+			for(int j=0;j<process_list[i]->dll_list_.size();j++)
+				std::cout << process_list[i]->dll_list_[j] << std::endl;
+		}*/
 	}
-	std::cout << '\n';
 }
 
 void ProcessInfo::make_process_list()
 {
-	fill_pid_name();
+	create_vector();
 	fill_path();
-	
-
-
+	fill_parent_name();
+	fill_owner();
 }
 
-void ProcessInfo::fill_pid_name()
+void ProcessInfo::create_vector()
 {
 	PROCESSENTRY32 peProcessEntry;
 	HANDLE CONST hSnapshot = CreateToolhelp32Snapshot(
@@ -54,7 +59,12 @@ void ProcessInfo::fill_pid_name()
 	Process32First(hSnapshot, &peProcessEntry);
 
 	do {
-		std::unique_ptr<ProcessInfoItem> new_process_item = std::make_unique<ProcessInfoItem>(peProcessEntry.th32ProcessID, WsToCommonString(peProcessEntry.szExeFile));
+		
+		std::unique_ptr<ProcessInfoItem> new_process_item = std::make_unique<ProcessInfoItem>(
+			peProcessEntry.th32ParentProcessID,
+			peProcessEntry.th32ProcessID,
+			WsToCommonString(peProcessEntry.szExeFile));
+
 		process_list.push_back(std::move(new_process_item));
 
 		MODULEENTRY32 meModuleEntry;
@@ -114,7 +124,71 @@ void ProcessInfo::fill_path()
 	}
 }
 
+void ProcessInfo::fill_parent_name()
+{
+	for (int i = 0; i < process_list.size(); i++)
+	{
+		DWORD parent_pid = process_list[i]->parent_pid_;
 
+		for (int j = 0; j < process_list.size(); j++)
+		{
+			if (process_list[j]->pid_ == parent_pid)
+			{
+				process_list[i]->parent_name_ = process_list[j]->process_name_;
+				break;
+			}
+
+			if (j == process_list.size()-1)
+				process_list[i]->parent_name_ = "<Non-existent Process>";
+
+		}	
+	}
+}
+
+void ProcessInfo::fill_owner()
+{
+	for (int i = 0; i < process_list.size(); i++)
+	{
+		HANDLE hProcess;
+
+		hProcess = OpenProcess(
+			PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+			FALSE,
+			process_list[i]->pid_);
+
+		if (hProcess == NULL)
+		{
+			//continue;
+			//ErrorExit(TEXT("OpenProcess"));
+			//return;
+		}
+
+		HANDLE hAccessToken;
+		TCHAR InfoBuffer[1000], szAccountName[200], szDomainName[200];
+
+		PTOKEN_USER pTokenUser = (PTOKEN_USER)InfoBuffer;
+		DWORD dwInfoBufferSize, dwAccountSize = 200, dwDomainSize = 200;
+		SID_NAME_USE snu;
+
+	
+		OpenProcessToken(hProcess, TOKEN_READ, &hAccessToken);
+
+		GetTokenInformation(hAccessToken, TokenUser, InfoBuffer, 1000, &dwInfoBufferSize);
+		
+		LookupAccountSid(NULL, pTokenUser->User.Sid, szAccountName, &dwAccountSize,
+			szDomainName, &dwDomainSize, &snu);
+
+		process_list[i]->owner_sid_ = pTokenUser->User.Sid;
+
+		std::string owner_name_string = CW2A(szAccountName);
+		process_list[i]->owner_name_ = owner_name_string;
+
+		LPTSTR string_sid;
+		ConvertSidToStringSid(process_list[i]->owner_sid_, &string_sid);
+		process_list[i]->owner_sid_string_ = WsToCommonString(string_sid);
+	}
+
+}
 
 
 
