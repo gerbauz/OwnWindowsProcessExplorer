@@ -158,7 +158,7 @@ void ProcessInfo::fill_owner()
 
 		if (hProcess == NULL)
 		{
-			//continue;
+			continue;
 			//ErrorExit(TEXT("OpenProcess"));
 			//return;
 		}
