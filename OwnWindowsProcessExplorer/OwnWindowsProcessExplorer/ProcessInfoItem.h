@@ -3,7 +3,7 @@
 
 
 #include <strsafe.h> //Only for debug (GetLastError)
-#include <windows.h>
+#include <Windows.h>
 #include <string>
 #include <vector>
 
@@ -39,7 +39,7 @@ struct ProcessInfoItem
 		//std::string	file_path,
 		//std::string owner_name,
 		//std::string parent_name,
-        std::wstring    process_name//,
+        std::string    process_name//,
 		//std::vector<std::string> dll_list
 	);
 

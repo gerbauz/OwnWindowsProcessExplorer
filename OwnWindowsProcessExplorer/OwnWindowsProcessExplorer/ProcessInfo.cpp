@@ -71,7 +71,7 @@ void ProcessInfo::create_vector()
 		std::shared_ptr<ProcessInfoItem> new_process_item = std::make_shared<ProcessInfoItem>(
 			peProcessEntry.th32ParentProcessID,
 			peProcessEntry.th32ProcessID,
-            peProcessEntry.szExeFile);
+            WsToCommonString(peProcessEntry.szExeFile));
 
 		process_list.push_back(new_process_item);
 
@@ -147,7 +147,7 @@ void ProcessInfo::fill_parent_name()
 			}
 
 			if (j == process_list.size() - 1)
-                process_list[i]->parent_name_ = L"<Non-existent Process>";
+                process_list[i]->parent_name_ = "<Non-existent Process>";
 
 		}
 	}
@@ -261,7 +261,7 @@ void ProcessInfo::fill_integrity_level() //TODO: change integrity level by SetTo
 			&hToken))
 		{
 			continue;
-			ErrorExit(TEXT("OpenProcessToken"));
+//            ErrorExit(TEXT("OpenProcessToken"));
 			return;
 		}
 
@@ -280,13 +280,13 @@ void ProcessInfo::fill_integrity_level() //TODO: change integrity level by SetTo
 		pToken = (TOKEN_MANDATORY_LABEL *)LocalAlloc(LPTR, returnLength);
 		if (pToken == NULL)
 		{
-			ErrorExit(TEXT("LocalAlloc"));
+//            ErrorExit(TEXT("LocalAlloc"));
 		}
 
 		if (!GetTokenInformation(hToken, TokenIntegrityLevel, pToken,
 			returnLength, &returnLength))
 		{
-			ErrorExit(TEXT("GetTokenInformation"));
+//            ErrorExit(TEXT("GetTokenInformation"));
 		}
 		DWORD dwIntegrityLevel = *GetSidSubAuthority(pToken->Label.Sid,
 			(DWORD)(UCHAR)(*GetSidSubAuthorityCount(pToken->Label.Sid) - 1));
@@ -315,7 +315,12 @@ void ProcessInfo::fill_integrity_level() //TODO: change integrity level by SetTo
 		}
 		CloseHandle(hToken);
 		CloseHandle(hProcess);
-	}
+    }
+}
+
+std::vector<std::shared_ptr<ProcessInfoItem> > ProcessInfo::get_process_list() const
+{
+    return process_list;
 }
 
 void ProcessInfo::ErrorExit(LPTSTR lpszFunction)

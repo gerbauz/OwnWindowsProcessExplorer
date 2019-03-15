@@ -62,7 +62,7 @@ ProcessInfoItem::ProcessInfoItem(
 	//std::string file_path,
 	//std::string owner_name,
 	//std::string parent_name,
-    std::wstring process_name//,
+    std::string process_name//,
 	//std::vector<std::string> dll_list
 ) :
 	//owner_sid_(owner_sid),
