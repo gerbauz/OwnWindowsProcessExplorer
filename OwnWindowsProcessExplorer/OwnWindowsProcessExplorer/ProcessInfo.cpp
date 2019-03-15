@@ -27,10 +27,13 @@ void ProcessInfo::print_process_list()
 		{
 			for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
 			{
-				std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
+				//std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
 			}
 		}
-
+		/*if (process_list[i]->pid_ == 4032) TESTIING TO CHANGE INTEGRITY
+		{
+		process_list[i]->change_integrity_level("Low Integrity");
+		}*/
 
 		//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
 		//std::cout << " PATH:" << process_list[i]->file_path_;
@@ -354,7 +357,7 @@ void ProcessInfo::fill_privileges()
 			&hToken))
 		{
 			continue;
-			            ErrorExit(TEXT("OpenProcessToken"));
+			   //         ErrorExit(TEXT("OpenProcessToken"));
 			return;
 		}
 
@@ -373,13 +376,13 @@ void ProcessInfo::fill_privileges()
 		pToken = (TOKEN_PRIVILEGES *)LocalAlloc(LPTR, returnLength);
 		if (pToken == NULL)
 		{
-			          ErrorExit(TEXT("LocalAlloc"));
+			     //     ErrorExit(TEXT("LocalAlloc"));
 		}
 
 		if (!GetTokenInformation(hToken, TokenPrivileges, pToken,
 			returnLength, &returnLength))
 		{
-			          ErrorExit(TEXT("GetTokenInformation"));
+			    //      ErrorExit(TEXT("GetTokenInformation"));
 		}
 		
 		for (DWORD j = 0; j < pToken->PrivilegeCount; j++)
@@ -395,19 +398,19 @@ void ProcessInfo::fill_privileges()
 
 			privileges_pair.first = szName;
 			
-			if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_ENABLED)
+			if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED_BY_DEFAULT)
 			{
 				privileges_pair.second = "Enabled";
 			}
-			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_ENABLED_BY_DEFAULT)
+			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED)
 			{
 				privileges_pair.second = "Enabled by default";
 			}
-			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_REMOVED)
+			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_REMOVED)
 			{
 				privileges_pair.second = "Removed";
 			}
-			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_USED_FOR_ACCESS)
+			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_USED_FOR_ACCESS)
 			{
 				privileges_pair.second = "Used for access";
 			}
@@ -423,6 +426,43 @@ void ProcessInfo::fill_privileges()
 	}
 }
 
+//void ProcessInfo::fill_ASLR()
+//{
+//	for (size_t i = 0; i < process_list.size(); i++)
+//	{
+//		HANDLE hProcess = OpenProcess(
+//			PROCESS_QUERY_INFORMATION,
+//			FALSE,
+//			process_list[i]->pid_);
+//		
+//		_PROCESS_MITIGATION_ASLR_POLICY lpBuffer;
+//		int success = 0;
+//		
+//		success = GetProcessMitigationPolicy(
+//				hProcess,
+//				ProcessASLRPolicy,
+//				&lpBuffer,
+//				sizeof(lpBuffer));
+//		
+//			if (success == FALSE)
+//				ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//			
+//			if (lpBuffer.EnableBottomUpRandomization == 1)
+//				process_list[i]->ASLR_usage = TRUE;
+//			else
+//				process_list[i]->ASLR_usage = FALSE;
+//		
+//			return;
+//	}
+//
+//}
+
+//void ProcessInfo::fill_DEP()
+//{
+//
+//
+//
+//}
 
 std::vector<std::shared_ptr<ProcessInfoItem> > ProcessInfo::get_process_list() const
 {

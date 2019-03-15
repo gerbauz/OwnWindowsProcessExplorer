@@ -9,6 +9,84 @@ void ProcessInfoItem::add_to_privileges(std::pair<std::string, std::string> priv
 {
 	privileges_list_.push_back(privileges_info);
 }
+
+void ProcessInfoItem::change_integrity_level(std::string new_level)
+{
+	HANDLE hProcess;
+	//SetPrivilege(SE_TCB_NAME, TRUE);
+	hProcess = OpenProcess(
+		PROCESS_QUERY_INFORMATION,
+		FALSE,
+		this->pid_);
+
+	if (hProcess == NULL)
+	{
+		//ErrorExit(TEXT("OpenProcess"));
+		return;
+		//return;
+	}
+
+	HANDLE hToken;
+
+	if (!OpenProcessToken(
+		hProcess,
+		TOKEN_DUPLICATE | TOKEN_QUERY |
+		TOKEN_ADJUST_DEFAULT | TOKEN_ASSIGN_PRIMARY,
+		&hToken))
+	{
+		//ErrorExit(TEXT("OpenProcessToken"));
+		return;
+	}
+
+	DWORD new_level_dword;
+
+	if (new_level == "Untrusted")
+	{
+		new_level_dword = SECURITY_MANDATORY_UNTRUSTED_RID;
+	}
+	else if (new_level == "Low Integrity")
+	{
+		new_level_dword = SECURITY_MANDATORY_LOW_RID;
+	}
+	else if (new_level == "Medium Integrity")
+	{
+		new_level_dword = SECURITY_MANDATORY_MEDIUM_RID;
+	}
+	else if (new_level == "High Integrity")
+	{
+		new_level_dword = SECURITY_MANDATORY_HIGH_RID;
+	}
+	else if (new_level == "System Integrity")
+	{
+		new_level_dword = SECURITY_MANDATORY_SYSTEM_RID;
+	}
+	else
+		return;
+
+	SID_IDENTIFIER_AUTHORITY MAuthority = SECURITY_MANDATORY_LABEL_AUTHORITY;
+	PSID pSid = NULL;
+	AllocateAndInitializeSid(&MAuthority, 1, new_level_dword, 0, 0, 0, 0, 0, 0, 0, &pSid);
+	
+	TOKEN_MANDATORY_LABEL tml = { 0 };
+	tml.Label.Sid = pSid;
+	tml.Label.Attributes = SE_GROUP_INTEGRITY;
+
+
+	if (!SetTokenInformation(
+		hToken,
+		TokenIntegrityLevel,
+		&tml,
+		(sizeof(tml) + GetLengthSid(pSid))))
+	{
+		//ErrorExit(TEXT("SetTokenInformation"));
+	}
+
+	CloseHandle(hToken);
+	CloseHandle(hProcess);
+
+}
+
+
 //void ProcessInfoItem::check_ASLR()
 //{
 //	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, this->pid_);
@@ -111,3 +189,37 @@ void ProcessInfoItem::ErrorExit(LPTSTR lpszFunction)
 	LocalFree(lpDisplayBuf);
 	ExitProcess(dw);
 }
+
+
+
+//BOOL ProcessInfoItem::SetPrivilege(LPCWSTR lpszPrivilege, BOOL bEnablePrivilege)
+//{
+//	TOKEN_PRIVILEGES priv = { 0,0,0,0 };
+//	HANDLE hToken = NULL;
+//	LUID luid = { 0,0 };
+//	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
+//	{
+//		if (hToken)
+//			CloseHandle(hToken);
+//		return FALSE;
+//	}
+//	if (!LookupPrivilegeValueW(0, lpszPrivilege, &luid))
+//	{
+//		if (hToken)
+//			CloseHandle(hToken);
+//		return FALSE;
+//	}
+//	priv.PrivilegeCount = 1;
+//	priv.Privileges[0].Luid = luid;
+//	priv.Privileges[0].Attributes = bEnablePrivilege ? SE_PRIVILEGE_ENABLED : SE_PRIVILEGE_REMOVED;
+//
+//	if (!AdjustTokenPrivileges(hToken, FALSE, &priv, 0, 0, 0))
+//	{
+//		if (hToken)
+//			CloseHandle(hToken);
+//		return FALSE;
+//	}
+//	if (hToken)
+//		CloseHandle(hToken);
+//	return TRUE;
+//}

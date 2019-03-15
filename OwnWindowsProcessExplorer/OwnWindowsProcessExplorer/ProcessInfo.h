@@ -1,6 +1,8 @@
 #pragma once
 
+
 #include "ProcessInfoItem.h"
+#include <processthreadsapi.h>
 #include <psapi.h>
 #include <iostream>
 #include <tlhelp32.h>
@@ -8,7 +10,6 @@
 #include <sddl.h>
 #include <atlstr.h>
 #include <memory>
-
 class ProcessInfo
 {
 private:
@@ -27,9 +28,12 @@ public:
     void fill_path();
     void fill_parent_name();
     void fill_owner();
-    void fill_process_bit();
+	void fill_process_bit();
+	void fill_ASLR();
+	void fill_DEP();
+	
 	void fill_privileges();
-
+	
     void fill_integrity_level();
     //void make_dll_list();
 
