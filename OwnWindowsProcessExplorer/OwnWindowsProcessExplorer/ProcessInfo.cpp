@@ -23,6 +23,15 @@ void ProcessInfo::print_process_list()
 	{
 		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
 		std::cout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
+		if (!(process_list[i]->privileges_list_.empty()))
+		{
+			for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
+			{
+				std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
+			}
+		}
+
+
 		//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
 		//std::cout << " PATH:" << process_list[i]->file_path_;
 		//std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
@@ -48,6 +57,7 @@ void ProcessInfo::make_process_list()
 	fill_process_bit();
 
 	fill_integrity_level();
+	fill_privileges();
 
 }
 
@@ -317,6 +327,103 @@ void ProcessInfo::fill_integrity_level() //TODO: change integrity level by SetTo
 		CloseHandle(hProcess);
     }
 }
+
+void ProcessInfo::fill_privileges()
+{
+	for (size_t i = 0; i < process_list.size(); i++)
+	{
+		HANDLE hProcess;
+
+		hProcess = OpenProcess(
+			PROCESS_QUERY_INFORMATION,
+			FALSE,
+			process_list[i]->pid_);
+
+		if (hProcess == NULL)
+		{
+			continue;
+			//ErrorExit(TEXT("OpenProcess"));
+			return;
+		}
+
+		HANDLE hToken;
+
+		if (!OpenProcessToken(
+			hProcess,
+			TOKEN_QUERY|TOKEN_READ,
+			&hToken))
+		{
+			continue;
+			            ErrorExit(TEXT("OpenProcessToken"));
+			return;
+		}
+
+		PTOKEN_PRIVILEGES pToken = NULL;
+		DWORD returnLength = 0;
+
+		GetTokenInformation(
+			hToken,
+			TokenPrivileges,
+			NULL,
+			returnLength,
+			&returnLength
+		);
+
+
+		pToken = (TOKEN_PRIVILEGES *)LocalAlloc(LPTR, returnLength);
+		if (pToken == NULL)
+		{
+			          ErrorExit(TEXT("LocalAlloc"));
+		}
+
+		if (!GetTokenInformation(hToken, TokenPrivileges, pToken,
+			returnLength, &returnLength))
+		{
+			          ErrorExit(TEXT("GetTokenInformation"));
+		}
+		
+		for (DWORD j = 0; j < pToken->PrivilegeCount; j++)
+		{ 
+			DWORD dwSize = 0;
+			LookupPrivilegeName(NULL, &pToken->Privileges[j].Luid, NULL, &dwSize);
+
+			LPSTR szName = new CHAR[dwSize + 1];
+
+			LookupPrivilegeNameA(NULL, &pToken->Privileges[j].Luid, szName, &dwSize);
+
+			std::pair<std::string, std::string> privileges_pair;
+
+			privileges_pair.first = szName;
+
+			
+			if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_ENABLED)
+			{
+				privileges_pair.second = "Enabled";
+			}
+			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_ENABLED_BY_DEFAULT)
+			{
+				privileges_pair.second = "Enabled by default";
+			}
+			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_REMOVED)
+			{
+				privileges_pair.second = "Removed";
+			}
+			else if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_USED_FOR_ACCESS)
+			{
+				privileges_pair.second = "Used for access";
+			}
+			else
+			{
+				privileges_pair.second = "Disabled";
+			}
+			process_list[i]->add_to_privileges(privileges_pair);
+			
+		}
+		CloseHandle(hToken);
+		CloseHandle(hProcess);
+	}
+}
+
 
 std::vector<std::shared_ptr<ProcessInfoItem> > ProcessInfo::get_process_list() const
 {

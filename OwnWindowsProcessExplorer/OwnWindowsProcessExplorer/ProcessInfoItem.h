@@ -24,11 +24,12 @@ struct ProcessInfoItem
 	std::string						integrity_level_;
 
 	std::vector<std::string>		dll_list_;
+	std::vector<std::pair<std::string, std::string>> privileges_list_;
 
 	void ErrorExit(LPTSTR lpszFunction); //Only for debug (GetLastError)
 
 	void add_to_dll_list(std::string dll_name);
-
+	void add_to_privileges(std::pair<std::string, std::string>);
 	//void check_ASLR();
 	//void check_DEP();
 

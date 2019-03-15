@@ -5,6 +5,10 @@ void ProcessInfoItem::add_to_dll_list(std::string dll_name)
 	dll_list_.push_back(dll_name);
 }
 
+void ProcessInfoItem::add_to_privileges(std::pair<std::string, std::string> privileges_info)
+{
+	privileges_list_.push_back(privileges_info);
+}
 //void ProcessInfoItem::check_ASLR()
 //{
 //	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, this->pid_);
