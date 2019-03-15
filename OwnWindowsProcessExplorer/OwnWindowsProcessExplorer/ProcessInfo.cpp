@@ -394,7 +394,6 @@ void ProcessInfo::fill_privileges()
 			std::pair<std::string, std::string> privileges_pair;
 
 			privileges_pair.first = szName;
-
 			
 			if (pToken->Privileges[j].Attributes == SE_PRIVILEGE_ENABLED)
 			{
