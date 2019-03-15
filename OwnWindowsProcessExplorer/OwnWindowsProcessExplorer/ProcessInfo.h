@@ -12,7 +12,7 @@
 class ProcessInfo
 {
 private:
-	std::vector<std::unique_ptr<ProcessInfoItem>> process_list;
+	std::vector<std::shared_ptr<ProcessInfoItem>> process_list;
 
 public:
 	ProcessInfo();
@@ -20,7 +20,7 @@ public:
 
 	void ErrorExit(LPTSTR lpszFunction);
 
-	std::string WsToCommonString(WCHAR * wcharstring);
+    std::string WsToCommonString(const WCHAR * wcharstring) const;
 	void print_process_list(); // TODO: delete this functionality in advance
 	void make_process_list();
 	void create_vector();
@@ -28,5 +28,8 @@ public:
 	void fill_parent_name();
 	void fill_owner();
 	//void make_dll_list();
+
+	std::vector<std::shared_ptr<ProcessInfoItem>> get_process_list() const;
+
 };
 

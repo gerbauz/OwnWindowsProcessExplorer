@@ -10,12 +10,8 @@
 #include <vector>
 
 
-class ProcessInfoItem
+struct ProcessInfoItem
 {
-private:
-
-	friend class ProcessInfo;
-
 	//bool							DEP_usage;
 	//bool							ASLR_usage;
 	int 							type_of_process;
@@ -24,12 +20,11 @@ private:
 	DWORD							parent_pid_;
 	DWORD							pid_;
 	std::string						file_path_;
-	std::string						owner_name_;
-	std::string						parent_name_;
-	std::string						process_name_;
+    std::string					owner_name_;
+    std::wstring					parent_name_;
+    std::wstring					process_name_;
 	std::vector<std::string>		dll_list_;
 
-public:
 	void ErrorExit(LPTSTR lpszFunction); //Only for debug (GetLastError)
 
 	void add_to_dll_list(std::string dll_name);
@@ -44,7 +39,7 @@ public:
 		//std::string	file_path,
 		//std::string owner_name,
 		//std::string parent_name,
-		std::string	process_name//,
+        std::wstring    process_name//,
 		//std::vector<std::string> dll_list
 	);
 

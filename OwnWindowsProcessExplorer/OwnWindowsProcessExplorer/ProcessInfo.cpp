@@ -8,7 +8,7 @@ ProcessInfo::~ProcessInfo()
 {
 }
 
-std::string ProcessInfo::WsToCommonString(WCHAR * wcharstring)
+std::string ProcessInfo::WsToCommonString(const WCHAR * wcharstring) const
 {
 	std::wstring ws(wcharstring);
 	return std::string(ws.begin(), ws.end());
@@ -19,11 +19,11 @@ void ProcessInfo::print_process_list()
 	setlocale(LC_ALL, "Russian");
 	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
 	{
-		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
+        std::wcout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
 		std::cout << " PATH:" << process_list[i]->file_path_;
 		std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
-		std::cout << " PARENT NAME:" << process_list[i]->parent_name_;
-		std::cout << " OWNER NAME: " << process_list[i]->owner_name_;
+        std::wcout << " PARENT NAME:" << process_list[i]->parent_name_;
+        std::wcout << " OWNER NAME: " << process_list[i]->owner_name_;
 		std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
 
 		/*if (!(process_list[i]->dll_list_.empty()))
@@ -60,12 +60,12 @@ void ProcessInfo::create_vector()
 
 	do {
 
-		std::unique_ptr<ProcessInfoItem> new_process_item = std::make_unique<ProcessInfoItem>(
+		std::shared_ptr<ProcessInfoItem> new_process_item = std::make_shared<ProcessInfoItem>(
 			peProcessEntry.th32ParentProcessID,
 			peProcessEntry.th32ProcessID,
-			WsToCommonString(peProcessEntry.szExeFile));
+            peProcessEntry.szExeFile);
 
-		process_list.push_back(std::move(new_process_item));
+		process_list.push_back(new_process_item);
 
 		MODULEENTRY32 meModuleEntry;
 
@@ -104,7 +104,7 @@ void ProcessInfo::fill_path()
 
 		if (hProcess == NULL)
 		{
-			process_list[i]->file_path_ = WsToCommonString(L"ERROR_ACCESS_DENIED ");
+            process_list[i]->file_path_ = WsToCommonString(L"ERROR_ACCESS_DENIED ");
 			continue;
 			//ErrorExit(TEXT("OpenProcess"));
 			//return;
@@ -134,12 +134,12 @@ void ProcessInfo::fill_parent_name()
 		{
 			if (process_list[j]->pid_ == parent_pid)
 			{
-				process_list[i]->parent_name_ = process_list[j]->process_name_;
+                process_list[i]->parent_name_ = process_list[j]->process_name_;
 				break;
 			}
 
 			if (j == process_list.size() - 1)
-				process_list[i]->parent_name_ = "<Non-existent Process>";
+                process_list[i]->parent_name_ = L"<Non-existent Process>";
 
 		}
 	}
@@ -180,14 +180,19 @@ void ProcessInfo::fill_owner()
 
 		process_list[i]->owner_sid_ = pTokenUser->User.Sid;
 
-		std::string owner_name_string = CW2A(szAccountName);
+        std::string owner_name_string = std::string(CW2A(szAccountName));
 		process_list[i]->owner_name_ = owner_name_string;
 
 		LPTSTR string_sid;
 		ConvertSidToStringSid(process_list[i]->owner_sid_, &string_sid);
-		process_list[i]->owner_sid_string_ = WsToCommonString(string_sid);
+        process_list[i]->owner_sid_string_ = WsToCommonString(string_sid);
 	}
 
+}
+
+std::vector<std::shared_ptr<ProcessInfoItem>> ProcessInfo::get_process_list() const
+{
+	return process_list;
 }
 
 
