@@ -14,17 +14,21 @@ std::string ProcessInfo::WsToCommonString(const WCHAR * wcharstring) const
 	return std::string(ws.begin(), ws.end());
 }
 
+
 void ProcessInfo::print_process_list()
 {
 	setlocale(LC_ALL, "Russian");
-	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
+
+	for (size_t i = 0; i < process_list.size(); i++)
 	{
-        std::wcout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
-		std::cout << " PATH:" << process_list[i]->file_path_;
-		std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
-        std::wcout << " PARENT NAME:" << process_list[i]->parent_name_;
-        std::wcout << " OWNER NAME: " << process_list[i]->owner_name_;
-		std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
+		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
+		std::cout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
+		//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
+		//std::cout << " PATH:" << process_list[i]->file_path_;
+		//std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
+		//std::cout << " PARENT NAME:" << process_list[i]->parent_name_;
+		//std::cout << " OWNER NAME: " << process_list[i]->owner_name_;
+		//std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
 
 		/*if (!(process_list[i]->dll_list_.empty()))
 		{
@@ -41,6 +45,10 @@ void ProcessInfo::make_process_list()
 	fill_path();
 	fill_parent_name();
 	fill_owner();
+	fill_process_bit();
+
+	fill_integrity_level();
+
 }
 
 void ProcessInfo::create_vector()
@@ -93,7 +101,7 @@ void ProcessInfo::create_vector()
 
 void ProcessInfo::fill_path()
 {
-	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
+	for (size_t i = 0; i < process_list.size(); i++)
 	{
 		HANDLE hProcess;
 
@@ -126,11 +134,11 @@ void ProcessInfo::fill_path()
 
 void ProcessInfo::fill_parent_name()
 {
-	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
+	for (size_t i = 0; i < process_list.size(); i++)
 	{
 		DWORD parent_pid = process_list[i]->parent_pid_;
 
-		for (int j = 0; j < static_cast<int>(process_list.size()); j++)
+		for (size_t j = 0; j < process_list.size(); j++)
 		{
 			if (process_list[j]->pid_ == parent_pid)
 			{
@@ -147,7 +155,7 @@ void ProcessInfo::fill_parent_name()
 
 void ProcessInfo::fill_owner()
 {
-	for (int i = 0; i < static_cast<int>(process_list.size()); i++)
+	for (size_t i = 0; i < process_list.size(); i++)
 	{
 		HANDLE hProcess;
 
@@ -190,12 +198,125 @@ void ProcessInfo::fill_owner()
 
 }
 
-std::vector<std::shared_ptr<ProcessInfoItem>> ProcessInfo::get_process_list() const
+void ProcessInfo::fill_process_bit()
 {
-	return process_list;
+	for (size_t i = 0; i < process_list.size(); i++)
+	{
+		HANDLE hProcess;
+
+		hProcess = OpenProcess(
+			PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+			FALSE,
+			process_list[i]->pid_);
+
+		if (hProcess == NULL)
+		{
+			continue;
+			//ErrorExit(TEXT("OpenProcess"));
+			//return;
+		}
+
+		BOOL Wow64Process;
+		if (IsWow64Process(hProcess, &Wow64Process) == NULL)
+		{
+			process_list[i]->type_of_process_ = "Unknown";
+		}
+		else
+		{
+			if(Wow64Process == TRUE)
+				process_list[i]->type_of_process_ = "x86";
+			else
+				process_list[i]->type_of_process_ = "x64";
+		}
+
+		CloseHandle(hProcess);
+	}
+
+
 }
 
+void ProcessInfo::fill_integrity_level() //TODO: change integrity level by SetTokenInformation
+{
+	for (size_t i = 0; i < process_list.size(); i++)
+	{
+		HANDLE hProcess;
 
+		hProcess = OpenProcess(
+			PROCESS_QUERY_INFORMATION,
+			FALSE,
+			process_list[i]->pid_);
+
+		if (hProcess == NULL)
+		{
+			continue;
+			//ErrorExit(TEXT("OpenProcess"));
+			//return;
+		}
+
+		HANDLE hToken;
+
+		if (!OpenProcessToken(
+			hProcess,
+			TOKEN_QUERY,
+			&hToken))
+		{
+			continue;
+			ErrorExit(TEXT("OpenProcessToken"));
+			return;
+		}
+
+		PTOKEN_MANDATORY_LABEL pToken = NULL;
+		DWORD returnLength=0;
+		
+		GetTokenInformation(
+			hToken,
+			TokenIntegrityLevel,
+			NULL,
+			returnLength,
+			&returnLength
+		);
+		
+
+		pToken = (TOKEN_MANDATORY_LABEL *)LocalAlloc(LPTR, returnLength);
+		if (pToken == NULL)
+		{
+			ErrorExit(TEXT("LocalAlloc"));
+		}
+
+		if (!GetTokenInformation(hToken, TokenIntegrityLevel, pToken,
+			returnLength, &returnLength))
+		{
+			ErrorExit(TEXT("GetTokenInformation"));
+		}
+		DWORD dwIntegrityLevel = *GetSidSubAuthority(pToken->Label.Sid,
+			(DWORD)(UCHAR)(*GetSidSubAuthorityCount(pToken->Label.Sid) - 1));
+		
+		if (dwIntegrityLevel == SECURITY_MANDATORY_UNTRUSTED_RID)
+		{
+			process_list[i]->integrity_level_ = "Untrusted";
+		}
+		else if (dwIntegrityLevel == SECURITY_MANDATORY_LOW_RID)
+		{
+			process_list[i]->integrity_level_ = "Low Integrity";
+		}
+		else if (dwIntegrityLevel >= SECURITY_MANDATORY_MEDIUM_RID &&
+			dwIntegrityLevel < SECURITY_MANDATORY_HIGH_RID)
+		{
+			process_list[i]->integrity_level_ = "Medium Integrity";
+		}
+		else if (dwIntegrityLevel >= SECURITY_MANDATORY_HIGH_RID && 
+			dwIntegrityLevel < SECURITY_MANDATORY_SYSTEM_RID)
+		{
+			process_list[i]->integrity_level_ = "High Integrity";
+		}
+		else if (dwIntegrityLevel >= SECURITY_MANDATORY_SYSTEM_RID)
+		{
+			process_list[i]->integrity_level_ = "System Integrity";
+		}
+		CloseHandle(hToken);
+		CloseHandle(hProcess);
+	}
+}
 
 void ProcessInfo::ErrorExit(LPTSTR lpszFunction)
 {

@@ -27,6 +27,9 @@ public:
 	void fill_path();
 	void fill_parent_name();
 	void fill_owner();
+	void fill_process_bit();
+
+	void fill_integrity_level();
 	//void make_dll_list();
 
 	std::vector<std::shared_ptr<ProcessInfoItem>> get_process_list() const;
