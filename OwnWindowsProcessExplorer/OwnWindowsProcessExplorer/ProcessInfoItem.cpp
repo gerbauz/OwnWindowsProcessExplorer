@@ -10,7 +10,7 @@ void ProcessInfoItem::add_to_privileges(std::pair<std::string, std::string> priv
 	privileges_list_.push_back(privileges_info);
 }
 
-void ProcessInfoItem::change_integrity_level(std::string new_level)
+BOOL ProcessInfoItem::change_integrity_level(int new_level)
 {
 	HANDLE hProcess;
 	//SetPrivilege(SE_TCB_NAME, TRUE);
@@ -22,7 +22,7 @@ void ProcessInfoItem::change_integrity_level(std::string new_level)
 	if (hProcess == NULL)
 	{
 		//ErrorExit(TEXT("OpenProcess"));
-		return;
+		return FALSE;
 		//return;
 	}
 
@@ -35,33 +35,33 @@ void ProcessInfoItem::change_integrity_level(std::string new_level)
 		&hToken))
 	{
 		//ErrorExit(TEXT("OpenProcessToken"));
-		return;
+		return FALSE;
 	}
 
 	DWORD new_level_dword;
 
-	if (new_level == "Untrusted")
+	if (new_level == UNTRUSTED_INTEGRITY)
 	{
 		new_level_dword = SECURITY_MANDATORY_UNTRUSTED_RID;
 	}
-	else if (new_level == "Low Integrity")
+	else if (new_level == LOW_INTEGRITY)
 	{
 		new_level_dword = SECURITY_MANDATORY_LOW_RID;
 	}
-	else if (new_level == "Medium Integrity")
+	else if (new_level == MEDIUM_INTEGRITY)
 	{
 		new_level_dword = SECURITY_MANDATORY_MEDIUM_RID;
 	}
-	else if (new_level == "High Integrity")
+	else if (new_level == HIGH_INTEGRITY)
 	{
 		new_level_dword = SECURITY_MANDATORY_HIGH_RID;
 	}
-	else if (new_level == "System Integrity")
+	else if (new_level == SYSTEM_INTEGRITY)
 	{
 		new_level_dword = SECURITY_MANDATORY_SYSTEM_RID;
 	}
 	else
-		return;
+		return FALSE;
 
 	SID_IDENTIFIER_AUTHORITY MAuthority = SECURITY_MANDATORY_LABEL_AUTHORITY;
 	PSID pSid = NULL;
@@ -78,12 +78,84 @@ void ProcessInfoItem::change_integrity_level(std::string new_level)
 		&tml,
 		(sizeof(tml) + GetLengthSid(pSid))))
 	{
+		return FALSE;
 		//ErrorExit(TEXT("SetTokenInformation"));
 	}
 
 	CloseHandle(hToken);
 	CloseHandle(hProcess);
 
+	return TRUE;;
+
+}
+
+
+BOOL ProcessInfoItem::change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+	HANDLE hProcess = OpenProcess(
+		PROCESS_QUERY_INFORMATION,
+		FALSE,
+		this->pid_);
+
+	if (hProcess == NULL)
+	{
+		//ErrorExit(TEXT("OpenProcess"));
+		return FALSE;
+		//return;
+	}
+
+	HANDLE hToken;
+
+	if (!OpenProcessToken(
+		hProcess,
+		TOKEN_DUPLICATE | TOKEN_QUERY |
+		TOKEN_ADJUST_DEFAULT | TOKEN_ASSIGN_PRIMARY|TOKEN_ADJUST_PRIVILEGES,
+		&hToken))
+	{
+		//ErrorExit(TEXT("OpenProcessToken"));
+		return FALSE;
+	}
+
+	TOKEN_PRIVILEGES tp;
+	LUID luid;
+
+	if (!LookupPrivilegeValue(
+		NULL,            
+		lpszPrivilege,  
+		&luid))      
+	{
+		//ErrorExit(TEXT("LookupPrivilegeValue"));
+		return FALSE;
+	}
+
+	tp.PrivilegeCount = 1;
+	tp.Privileges[0].Luid = luid;
+	if (bEnablePrivilege)
+		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	else
+		tp.Privileges[0].Attributes = 0;
+
+	
+
+	if (!AdjustTokenPrivileges(
+		hToken,
+		FALSE,
+		&tp,
+		sizeof(TOKEN_PRIVILEGES),
+		(PTOKEN_PRIVILEGES)NULL,
+		(PDWORD)NULL))
+	{
+		ErrorExit(TEXT("AdjustTokenPrivileges"));
+		return FALSE;
+	}
+
+	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
+	{
+	//	ErrorExit(TEXT("The token does not have the specified privilege. \n"));
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 

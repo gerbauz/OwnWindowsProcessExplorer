@@ -1,5 +1,10 @@
 #pragma once
 
+#define UNTRUSTED_INTEGRITY 0
+#define LOW_INTEGRITY 1
+#define MEDIUM_INTEGRITY 2
+#define HIGH_INTEGRITY 3
+#define SYSTEM_INTEGRITY 4
 
 
 #include <strsafe.h> //Only for debug (GetLastError)
@@ -32,8 +37,10 @@ struct ProcessInfoItem
 
 	void add_to_dll_list(std::string dll_name);
 	void add_to_privileges(std::pair<std::string, std::string>);
-	void change_integrity_level(std::string);//args = ["Low Integrity", "Medium Integrity", "Untrusted", "High Integrity", "System Integrity"] 
+	BOOL change_integrity_level(int);
 	BOOL SetPrivilege(LPCWSTR lpszPrivilege, BOOL bEnablePrivilege); //Only for debug (up privilege for this app)
+	BOOL change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
+
 	//void check_ASLR();
 	//void check_DEP();
 
