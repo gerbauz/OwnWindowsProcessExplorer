@@ -75,7 +75,7 @@ BOOL ProcessInfoItem::change_integrity_level(int new_level)
 		&tml,
 		(sizeof(tml) + GetLengthSid(pSid))))
 	{
-		//return FALSE;
+		return FALSE;
 		ErrorExit(TEXT("SetTokenInformation"));
 	}
 
