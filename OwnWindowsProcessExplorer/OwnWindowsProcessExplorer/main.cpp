@@ -9,12 +9,13 @@ int main(int argc, char* argv[])
 {
 	setlocale(LC_ALL, "Russian");
 
-	//ProcessInfo pi;
+	ProcessInfo pi;
 	
-	//pi.make_process_list();
-	//pi.print_process_list();
+	pi.make_process_list();
 
-	FilesystemObject fo("C:\\Users");
+	pi.print_process_list();
+
+	//FilesystemObject fo("C:\\hello");
 /*	for (size_t i = 0; i < fo.data_acl.size(); i++)
 	{
 		std::cout << "USERNAME: " << fo.data_acl[i].username << std::endl;
@@ -30,7 +31,7 @@ int main(int argc, char* argv[])
 		std::cout << std::endl;
 	}*/
 	//std::cout << "OWNER: " << fo.owner << std::endl;
-	std::cout << "INTEGRITY: " << fo.integrity_level << std::endl;
+	//std::cout << "INTEGRITY: " << fo.integrity_level << std::endl;
 
 	ExitProcess(0);
 

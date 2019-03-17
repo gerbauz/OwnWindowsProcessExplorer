@@ -430,7 +430,6 @@ void FilesystemObject::fill_integrity_level()
 
 }
 
-
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
 {
 		// Retrieve the system error message for the last-error code

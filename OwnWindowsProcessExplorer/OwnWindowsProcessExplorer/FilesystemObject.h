@@ -28,6 +28,11 @@ private:
 	void fill_owner();
 	void fill_integrity_level();
 
+	void change_acl_info();
+	void change_owner();
+	//void change_
+
+
 	std::string fill_sid(PSID);
 	std::string fill_sid_type(PSID);
 	BOOL sid_to_text(PSID, char*, int);

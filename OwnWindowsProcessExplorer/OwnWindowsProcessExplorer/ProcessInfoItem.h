@@ -36,7 +36,11 @@ struct ProcessInfoItem
 	void ErrorExit(LPTSTR lpszFunction); //Only for debug (GetLastError)
 
 	void add_to_dll_list(std::string dll_name);
-	void add_to_privileges(std::pair<std::string, std::string>);
+
+	void fill_privileges();
+	void fill_integrity_level();
+
+
 	BOOL change_integrity_level(int);
 	BOOL change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
 

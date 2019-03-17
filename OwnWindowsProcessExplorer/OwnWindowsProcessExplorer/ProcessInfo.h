@@ -32,9 +32,6 @@ public:
 	void fill_ASLR();
 	void fill_DEP();
 	
-	void fill_privileges();
-	
-    void fill_integrity_level();
     //void make_dll_list();
 
     std::vector<std::shared_ptr<ProcessInfoItem>> get_process_list() const;
