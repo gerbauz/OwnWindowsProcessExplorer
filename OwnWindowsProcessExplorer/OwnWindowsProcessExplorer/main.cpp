@@ -9,11 +9,11 @@ int main(int argc, char* argv[])
 {
 	setlocale(LC_ALL, "Russian");
 
-	ProcessInfo pi;
+	//ProcessInfo pi;
 	
-	pi.make_process_list();
+	//pi.make_process_list();
 
-	pi.print_process_list();
+	//pi.print_process_list();
 
 	//FilesystemObject fo("C:\\hello");
 /*	for (size_t i = 0; i < fo.data_acl.size(); i++)
@@ -32,6 +32,9 @@ int main(int argc, char* argv[])
 	}*/
 	//std::cout << "OWNER: " << fo.owner << std::endl;
 	//std::cout << "INTEGRITY: " << fo.integrity_level << std::endl;
+
+	FilesystemObject fo(L"C:\\hello");
+	//fo.change_owner(L"Администраторы");
 
 	ExitProcess(0);
 

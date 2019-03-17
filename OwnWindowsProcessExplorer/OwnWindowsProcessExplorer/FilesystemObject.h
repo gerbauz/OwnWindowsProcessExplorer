@@ -28,9 +28,6 @@ private:
 	void fill_owner();
 	void fill_integrity_level();
 
-	void change_acl_info();
-	void change_owner(std::wstring);
-	void change_integrity_level();
 
 
 	std::wstring fill_sid(PSID);
@@ -49,6 +46,12 @@ public:
 	std::vector<ACL_INFO> data_acl;
 	std::wstring owner;
 	std::wstring integrity_level;
+
+
+	BOOL change_acl_info();
+	BOOL change_owner(std::wstring);
+	BOOL change_integrity_level();
+
 
 	~FilesystemObject();
 };

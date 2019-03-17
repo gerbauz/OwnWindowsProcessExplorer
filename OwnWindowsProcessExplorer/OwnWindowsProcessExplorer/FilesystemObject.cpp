@@ -130,6 +130,8 @@ FilesystemObject::FilesystemObject(std::wstring path) :
 	fill_acl_info();
 	fill_owner();
 	fill_integrity_level();
+
+
 }
 
 
@@ -150,7 +152,13 @@ void FilesystemObject::fill_acl_info()
 	PSECURITY_DESCRIPTOR pSD;
 
 	SE_OBJECT_TYPE type = SE_FILE_OBJECT;
-	if (GetNamedSecurityInfoW(this->path_.c_str(),type, DACL_SECURITY_INFORMATION, NULL, NULL, &acl, NULL, &pSD))
+	if (GetNamedSecurityInfoW(
+		this->path_.c_str(),
+		type, DACL_SECURITY_INFORMATION,
+		NULL, NULL,
+		&acl,
+		NULL,
+		&pSD))
 	{
 		ErrorExit(TEXT("GETNAMED"));
 	}
@@ -377,9 +385,17 @@ void FilesystemObject::fill_owner()
 	DWORD UserLen = MAX_NAME;
 	DWORD DomainLen = MAX_NAME;
 	SID_NAME_USE snu;
-	if (!LookupAccountSidW(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &snu))
+	if (!LookupAccountSidW(
+		NULL,
+		pSID,
+		UserName,
+		&UserLen,
+		DomainName,
+		&DomainLen,
+		&snu))
 	{
 		ErrorExit(TEXT("LookupAccountSidA"));
+		return;
 	}
 	this->owner = UserName;
 
@@ -391,7 +407,13 @@ void FilesystemObject::fill_integrity_level()
 	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
 	PSECURITY_DESCRIPTOR pSD = NULL;
 	PACL acl = 0;
-	GetNamedSecurityInfoW(this->path_.c_str(), SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION, 0, 0, 0, &acl, &pSD);
+	GetNamedSecurityInfoW(
+		this->path_.c_str(),
+		SE_FILE_OBJECT,
+		LABEL_SECURITY_INFORMATION,
+		0, 0, 0,
+		&acl,
+		&pSD);
 
 	{
 		if (0 != acl && 0 < acl->AceCount)
@@ -407,7 +429,12 @@ void FilesystemObject::fill_integrity_level()
 		PWSTR stringSD;
 		ULONG stringSDLen = 0;
 
-		ConvertSecurityDescriptorToStringSecurityDescriptor(pSD, SDDL_REVISION_1, LABEL_SECURITY_INFORMATION, &stringSD, &stringSDLen);
+		ConvertSecurityDescriptorToStringSecurityDescriptor(
+			pSD,
+			SDDL_REVISION_1,
+			LABEL_SECURITY_INFORMATION,
+			&stringSD,
+			&stringSDLen);
 
 		if (pSD)
 		{
@@ -430,13 +457,54 @@ void FilesystemObject::fill_integrity_level()
 
 }
 
-void FilesystemObject::change_owner(std::wstring new_owner)
+/*BOOL FilesystemObject::change_owner(std::wstring new_owner)
 {
+	SID_NAME_USE SidType;
+	DWORD UserLen = new_owner.size();
+	DWORD dwSidSize = 0;
+	WCHAR szDomain[MAX_NAME] = { 0 };
+	DWORD dwDomainSize = MAX_NAME;
 
+	LookupAccountNameW(
+		NULL,
+		new_owner.c_str(),
+		NULL,
+		&dwSidSize,
+		szDomain,
+		&dwDomainSize,
+		&SidType);	
 
+	PSID pSID = (PSID)LocalAlloc(LMEM_FIXED, dwSidSize);
 
+	if (!LookupAccountNameW(
+		NULL,
+		new_owner.c_str(),
+		pSID,
+		&dwSidSize,
+		szDomain,
+		&dwDomainSize,
+		&SidType))
+	{
+		ErrorExit(TEXT("LookupAccountNameW"));
+		return FALSE;
+	}
 
-}
+	if (SetNamedSecurityInfoW(
+		const_cast<LPWSTR>(this->path_.c_str()),
+		SE_FILE_OBJECT,
+		OWNER_SECURITY_INFORMATION,
+		&pSID,
+		NULL,
+		NULL,
+		NULL!=ERROR_SUCCESS))
+	{
+		//ErrorExit(TEXT("SetNamedSecurityInfoW"));
+	//	return FALSE;
+	}
+	
+	return TRUE;
+
+}*/
 
 
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
