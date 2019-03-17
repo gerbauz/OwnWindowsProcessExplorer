@@ -288,6 +288,8 @@ void ProcessInfoItem::fill_privileges()
 			//      ErrorExit(TEXT("GetTokenInformation"));
 		}
 
+		privileges_list_.clear();
+
 		for (DWORD j = 0; j < pToken->PrivilegeCount; j++)
 		{
 			DWORD dwSize = 0;
