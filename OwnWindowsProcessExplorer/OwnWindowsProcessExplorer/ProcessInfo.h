@@ -21,7 +21,7 @@ public:
 
     void ErrorExit(LPTSTR lpszFunction);
 
-    std::string WsToCommonString(const WCHAR * wcharstring) const;
+    std::wstring WsToCommonString(const WCHAR * wcharstring) const;
     void print_process_list(); // TODO: delete this functionality in advance
     void make_process_list();
     void create_vector();

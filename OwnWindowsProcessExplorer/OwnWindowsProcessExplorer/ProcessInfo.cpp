@@ -8,10 +8,10 @@ ProcessInfo::~ProcessInfo()
 {
 }
 
-std::string ProcessInfo::WsToCommonString(const WCHAR * wcharstring) const
+std::wstring ProcessInfo::WsToCommonString(const WCHAR * wcharstring) const
 {
 	std::wstring ws(wcharstring);
-	return std::string(ws.begin(), ws.end());
+	return std::wstring(ws.begin(), ws.end());
 }
 
 
@@ -21,13 +21,13 @@ void ProcessInfo::print_process_list()
 
 	/*	for (size_t i = 0; i < process_list.size(); i++)
 		{
-			std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
-			std::cout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
+			std::wcout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
+			std::wcout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
 			if (!(process_list[i]->privileges_list_.empty()))
 			{
 				for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
 				{
-					std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
+					std::wcout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
 				}
 			}
 			if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
@@ -50,7 +50,6 @@ void ProcessInfo::print_process_list()
 					std::cout << process_list[i]->dll_list_[j] << std::endl;
 			}*/
 			//}
-
 }
 
 void ProcessInfo::make_process_list()
@@ -127,7 +126,7 @@ void ProcessInfo::fill_path()
 
 		if (hProcess == NULL)
 		{
-            process_list[i]->file_path_ = WsToCommonString(L"ERROR_ACCESS_DENIED ");
+            process_list[i]->file_path_ = (L"ERROR_ACCESS_DENIED ");
 			continue;
 			//ErrorExit(TEXT("OpenProcess"));
 			//return;
@@ -142,7 +141,7 @@ void ProcessInfo::fill_path()
 			sizeof(szExeName) / sizeof(TCHAR)
 		);
 
-		process_list[i]->file_path_ = WsToCommonString(szExeName);
+		process_list[i]->file_path_ = szExeName;
 		CloseHandle(hProcess);
 	}
 }
@@ -162,7 +161,7 @@ void ProcessInfo::fill_parent_name()
 			}
 
 			if (j == process_list.size() - 1)
-                process_list[i]->parent_name_ = "<Non-existent Process>";
+                process_list[i]->parent_name_ = L"<Non-existent Process>";
 
 		}
 	}
@@ -203,8 +202,8 @@ void ProcessInfo::fill_owner()
 
 		process_list[i]->owner_sid_ = pTokenUser->User.Sid;
 
-        std::string owner_name_string = std::string(CW2A(szAccountName));
-		process_list[i]->owner_name_ = owner_name_string;
+        //std::wstring owner_name_string = std::wstring(CW2A(szAccountName));
+		process_list[i]->owner_name_ = szAccountName;
 
 		LPTSTR string_sid;
 		ConvertSidToStringSid(process_list[i]->owner_sid_, &string_sid);
@@ -234,14 +233,14 @@ void ProcessInfo::fill_process_bit()
 		BOOL Wow64Process;
 		if (IsWow64Process(hProcess, &Wow64Process) == NULL)
 		{
-			process_list[i]->type_of_process_ = "Unknown";
+			process_list[i]->type_of_process_ = L"Unknown";
 		}
 		else
 		{
 			if(Wow64Process == TRUE)
-				process_list[i]->type_of_process_ = "x86";
+				process_list[i]->type_of_process_ = L"x86";
 			else
-				process_list[i]->type_of_process_ = "x64";
+				process_list[i]->type_of_process_ = L"x64";
 		}
 
 		CloseHandle(hProcess);

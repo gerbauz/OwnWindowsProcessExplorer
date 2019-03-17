@@ -13,17 +13,17 @@ SID_NAME_USE SidTypeArray[] = {
 	SidTypeComputer,
 	SidTypeLabel
 };
-std::string SidStrTypeArray[] = {
-	"SidTypeUser",
-	"SidTypeGroup",
-	"SidTypeDomain",
-	"SidTypeAlias",
-	"SidTypeWellKnownGroup",
-	"SidTypeDeletedAccount",
-	"SidTypeInvalid",
-	"SidTypeUnknown",
-	"SidTypeComputer",
-	"SidTypeLabel" };
+std::wstring SidStrTypeArray[] = {
+	L"SidTypeUser",
+	L"SidTypeGroup",
+	L"SidTypeDomain",
+	L"SidTypeAlias",
+	L"SidTypeWellKnownGroup",
+	L"SidTypeDeletedAccount",
+	L"SidTypeInvalid",
+	L"SidTypeUnknown",
+	L"SidTypeComputer",
+	L"SidTypeLabel" };
 BYTE AceTypeArray[] = {
 	ACCESS_ALLOWED_ACE_TYPE,
 	ACCESS_DENIED_ACE_TYPE,
@@ -51,32 +51,32 @@ BYTE AceTypeArray[] = {
 	SYSTEM_MANDATORY_LABEL_ACE_TYPE,
 	ACCESS_MAX_MS_V5_ACE_TYPE
 };
-std::string AceTypeStrArray[] = {
-	"ACCESS_ALLOWED_ACE_TYPE",
-	"ACCESS_DENIED_ACE_TYPE",
-	"SYSTEM_AUDIT_ACE_TYPE",
-	"SYSTEM_ALARM_ACE_TYPE",
-	"ACCESS_MAX_MS_V2_ACE_TYPE",
-	"ACCESS_ALLOWED_COMPOUND_ACE_TYPE",
-	"ACCESS_MAX_MS_V3_ACE_TYPE",
-	"ACCESS_MIN_MS_OBJECT_ACE_TYPE",
-	"ACCESS_ALLOWED_OBJECT_ACE_TYPE",
-	"ACCESS_DENIED_OBJECT_ACE_TYPE",
-	"SYSTEM_AUDIT_OBJECT_ACE_TYPE",
-	"SYSTEM_ALARM_OBJECT_ACE_TYPE",
-	"ACCESS_MAX_MS_OBJECT_ACE_TYPE",
-	"ACCESS_MAX_MS_V4_ACE_TYPE",
-	"ACCESS_MAX_MS_ACE_TYPE",
-	"ACCESS_ALLOWED_CALLBACK_ACE_TYPE",
-	"ACCESS_DENIED_CALLBACK_ACE_TYPE",
-	"ACCESS_ALLOWED_CALLBACK_OBJECT_ACE_TYPE",
-	"ACCESS_DENIED_CALLBACK_OBJECT_ACE_TYPE",
-	"SYSTEM_AUDIT_CALLBACK_ACE_TYPE",
-	"SYSTEM_ALARM_CALLBACK_ACE_TYPE",
-	"SYSTEM_AUDIT_CALLBACK_OBJECT_ACE_TYPE",
-	"SYSTEM_ALARM_CALLBACK_OBJECT_ACE_TYPE",
-	"SYSTEM_MANDATORY_LABEL_ACE_TYPE",
-	"ACCESS_MAX_MS_V5_ACE_TYPE"
+std::wstring AceTypeStrArray[] = {
+	L"ACCESS_ALLOWED_ACE_TYPE",
+	L"ACCESS_DENIED_ACE_TYPE",
+	L"SYSTEM_AUDIT_ACE_TYPE",
+	L"SYSTEM_ALARM_ACE_TYPE",
+	L"ACCESS_MAX_MS_V2_ACE_TYPE",
+	L"ACCESS_ALLOWED_COMPOUND_ACE_TYPE",
+	L"ACCESS_MAX_MS_V3_ACE_TYPE",
+	L"ACCESS_MIN_MS_OBJECT_ACE_TYPE",
+	L"ACCESS_ALLOWED_OBJECT_ACE_TYPE",
+	L"ACCESS_DENIED_OBJECT_ACE_TYPE",
+	L"SYSTEM_AUDIT_OBJECT_ACE_TYPE",
+	L"SYSTEM_ALARM_OBJECT_ACE_TYPE",
+	L"ACCESS_MAX_MS_OBJECT_ACE_TYPE",
+	L"ACCESS_MAX_MS_V4_ACE_TYPE",
+	L"ACCESS_MAX_MS_ACE_TYPE",
+	L"ACCESS_ALLOWED_CALLBACK_ACE_TYPE",
+	L"ACCESS_DENIED_CALLBACK_ACE_TYPE",
+	L"ACCESS_ALLOWED_CALLBACK_OBJECT_ACE_TYPE",
+	L"ACCESS_DENIED_CALLBACK_OBJECT_ACE_TYPE",
+	L"SYSTEM_AUDIT_CALLBACK_ACE_TYPE",
+	L"SYSTEM_ALARM_CALLBACK_ACE_TYPE",
+	L"SYSTEM_AUDIT_CALLBACK_OBJECT_ACE_TYPE",
+	L"SYSTEM_ALARM_CALLBACK_OBJECT_ACE_TYPE",
+	L"SYSTEM_MANDATORY_LABEL_ACE_TYPE",
+	L"ACCESS_MAX_MS_V5_ACE_TYPE"
 };
 DWORD AccessRightArray[] = {
 	GENERIC_READ,
@@ -100,31 +100,31 @@ DWORD AccessRightArray[] = {
 	ACTRL_DS_DELETE_TREE,
 	ACTRL_DS_LIST_OBJECT,
 	ACTRL_DS_CONTROL_ACCESS };
-std::string AccessRightStrArray[] = {
-	"GENERIC_READ",
-	"GENERIC_WRITE",
-	"GENERIC_EXECUTE",
-	"GENERIC_ALL",
-	"DELETE",
-	"READ_CONTROL",
-	"WRITE_DAC",
-	"WRITE_OWNER",
-	"SYNCHRONIZE",
-	"STANDARD_RIGHTS_REQUIRED",
-	"STANDARD_RIGHTS_ALL",
-	"ACTRL_DS_OPEN",
-	"ACTRL_DS_CREATE_CHILD",
-	"ACTRL_DS_DELETE_CHILD",
-	"ACTRL_DS_LIST",
-	"ACTRL_DS_READ_PROP",
-	"ACTRL_DS_WRITE_PROP",
-	"ACTRL_DS_SELF",
-	"ACTRL_DS_DELETE_TREE",
-	"ACTRL_DS_LIST_OBJECT",
-	"ACTRL_DS_CONTROL_ACCESS" };
+std::wstring AccessRightStrArray[] = {
+	L"GENERIC_READ",
+	L"GENERIC_WRITE",
+	L"GENERIC_EXECUTE",
+	L"GENERIC_ALL",
+	L"DELETE",
+	L"READ_CONTROL",
+	L"WRITE_DAC",
+	L"WRITE_OWNER",
+	L"SYNCHRONIZE",
+	L"STANDARD_RIGHTS_REQUIRED",
+	L"STANDARD_RIGHTS_ALL",
+	L"ACTRL_DS_OPEN",
+	L"ACTRL_DS_CREATE_CHILD",
+	L"ACTRL_DS_DELETE_CHILD",
+	L"ACTRL_DS_LIST",
+	L"ACTRL_DS_READ_PROP",
+	L"ACTRL_DS_WRITE_PROP",
+	L"ACTRL_DS_SELF",
+	L"ACTRL_DS_DELETE_TREE",
+	L"ACTRL_DS_LIST_OBJECT",
+	L"ACTRL_DS_CONTROL_ACCESS" };
 
 
-FilesystemObject::FilesystemObject(std::string path) :
+FilesystemObject::FilesystemObject(std::wstring path) :
 	path_(path)
 {
 	fill_acl_info();
@@ -150,7 +150,7 @@ void FilesystemObject::fill_acl_info()
 	PSECURITY_DESCRIPTOR pSD;
 
 	SE_OBJECT_TYPE type = SE_FILE_OBJECT;
-	if (GetNamedSecurityInfoA(this->path_.c_str(),type, DACL_SECURITY_INFORMATION, NULL, NULL, &acl, NULL, &pSD))
+	if (GetNamedSecurityInfoW(this->path_.c_str(),type, DACL_SECURITY_INFORMATION, NULL, NULL, &acl, NULL, &pSD))
 	{
 		ErrorExit(TEXT("GETNAMED"));
 	}
@@ -188,22 +188,22 @@ void FilesystemObject::fill_acl_info()
 	}
 }
 
-std::string FilesystemObject::fill_sid(PSID pSID)
+std::wstring FilesystemObject::fill_sid(PSID pSID)
 {
-	char buf[512];
+	wchar_t buf[512];
 	memset(buf, 0, 512);
 	sid_to_text(pSID,buf,512);
 	return buf;
 }
 
-std::string FilesystemObject::fill_username(PSID pSID)
+std::wstring FilesystemObject::fill_username(PSID pSID)
 {
 	DWORD UserLen=MAX_NAME;
 	DWORD DomainLen=MAX_NAME;
 	SID_NAME_USE TypeOfpSid;
-	char UserName[MAX_NAME];
-	char DomainName[MAX_NAME];
-	if (!LookupAccountSidA(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &TypeOfpSid))
+	wchar_t UserName[MAX_NAME];
+	wchar_t DomainName[MAX_NAME];
+	if (!LookupAccountSidW(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &TypeOfpSid))
 	{
 		ErrorExit(TEXT("Lookup"));
 	}
@@ -212,7 +212,7 @@ std::string FilesystemObject::fill_username(PSID pSID)
 
 }
 
-std::string FilesystemObject::fill_sid_type(PSID pSID)
+std::wstring FilesystemObject::fill_sid_type(PSID pSID)
 {
 	DWORD UserLen=MAX_NAME;
 	DWORD DomainLen=MAX_NAME;
@@ -229,23 +229,23 @@ std::string FilesystemObject::fill_sid_type(PSID pSID)
 		if (TypeOfpSid == SidTypeArray[i])
 			return SidStrTypeArray[i];
 	}
-	return "ERROR";
+	return L"ERROR";
 
 }
 
-std::string FilesystemObject::fill_ace_type(BYTE type)
+std::wstring FilesystemObject::fill_ace_type(BYTE type)
 {
 	for (size_t i=0; i < 25; i++)
 	{
 		if (type == AceTypeArray[i])
 			return AceTypeStrArray[i];
 	}
-	return "ERROR";
+	return L"ERROR";
 }
 
-std::string FilesystemObject::fill_mask(ACCESS_MASK mask)
+std::wstring FilesystemObject::fill_mask(ACCESS_MASK mask)
 {
-	std::string mask_bin;
+	std::wstring mask_bin;
 	mask_bin.resize(33);
 	for (size_t i = 0; i < 32; i++)
 	{
@@ -259,9 +259,9 @@ std::string FilesystemObject::fill_mask(ACCESS_MASK mask)
 	return mask_bin;
 }
 
-std::vector<std::string> FilesystemObject::fill_access_rights(ACCESS_MASK mask)
+std::vector<std::wstring> FilesystemObject::fill_access_rights(ACCESS_MASK mask)
 {
-	std::vector<std::string> access_rights_vector;
+	std::vector<std::wstring> access_rights_vector;
 	for (size_t i = 0; i < 21; i++)
 	{
 		if (mask & AccessRightArray[i])
@@ -272,14 +272,14 @@ std::vector<std::string> FilesystemObject::fill_access_rights(ACCESS_MASK mask)
 	return access_rights_vector;
 }
 
-BOOL FilesystemObject::sid_to_text(PSID ps, char *buf, int bufSize)
+BOOL FilesystemObject::sid_to_text(PSID ps, wchar_t *buf, int bufSize)
 {
 	PSID_IDENTIFIER_AUTHORITY psia;
 	DWORD dwSubAuthorities;
 	DWORD dwSidRev = SID_REVISION;
 	DWORD i;
 	int n, size;
-	char *p;
+	wchar_t *p;
 
 	// Validate the binary SID.
 
@@ -310,14 +310,14 @@ BOOL FilesystemObject::sid_to_text(PSID ps, char *buf, int bufSize)
 
 	// Add 'S' prefix and revision number to the string.
 
-	size = sprintf(buf, "S-%lu-", dwSidRev);
+	size = wsprintf(buf, L"S-%lu-", dwSidRev);
 	p = buf + size;
 
 	// Add SID identifier authority to the string.
 
 	if (psia->Value[0] != 0 || psia->Value[1] != 0)
 	{
-		n = sprintf(p, "0x%02hx%02hx%02hx%02hx%02hx%02hx",
+		n = wsprintf(p, L"0x%02hx%02hx%02hx%02hx%02hx%02hx",
 			(USHORT)psia->Value[0], (USHORT)psia->Value[1],
 			(USHORT)psia->Value[2], (USHORT)psia->Value[3],
 			(USHORT)psia->Value[4], (USHORT)psia->Value[5]);
@@ -326,7 +326,7 @@ BOOL FilesystemObject::sid_to_text(PSID ps, char *buf, int bufSize)
 	}
 	else
 	{
-		n = sprintf(p, "%lu", ((ULONG)psia->Value[5]) +
+		n = wsprintf(p, L"%lu", ((ULONG)psia->Value[5]) +
 			((ULONG)psia->Value[4] << 8) + ((ULONG)psia->Value[3] << 16) +
 			((ULONG)psia->Value[2] << 24));
 		size += n;
@@ -337,7 +337,7 @@ BOOL FilesystemObject::sid_to_text(PSID ps, char *buf, int bufSize)
 
 	for (i = 0; i < dwSubAuthorities; ++i)
 	{
-		n = sprintf(p, "-%lu", *GetSidSubAuthority(ps, i));
+		n = wsprintf(p, L"-%lu", *GetSidSubAuthority(ps, i));
 		size += n;
 		p += n;
 	}
@@ -349,7 +349,7 @@ void FilesystemObject::fill_owner()
 {
 	PSECURITY_DESCRIPTOR pSD;
 	DWORD needLength=0;
-	if (!GetFileSecurityA(
+	if (!GetFileSecurityW(
 		this->path_.c_str(),
 		OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
 		0,
@@ -359,7 +359,7 @@ void FilesystemObject::fill_owner()
 
 	pSD = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, needLength);
 
-	if (!GetFileSecurityA(
+	if (!GetFileSecurityW(
 		this->path_.c_str(),
 		OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
 		pSD,
@@ -372,12 +372,12 @@ void FilesystemObject::fill_owner()
 	PSID pSID;
 	BOOL pFlag = FALSE;
 	GetSecurityDescriptorOwner(pSD, &pSID, &pFlag);
-	char UserName[MAX_NAME];
-	char DomainName[MAX_NAME];
+	wchar_t UserName[MAX_NAME];
+	wchar_t DomainName[MAX_NAME];
 	DWORD UserLen = MAX_NAME;
 	DWORD DomainLen = MAX_NAME;
 	SID_NAME_USE snu;
-	if (!LookupAccountSidA(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &snu))
+	if (!LookupAccountSidW(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &snu))
 	{
 		ErrorExit(TEXT("LookupAccountSidA"));
 	}
@@ -391,7 +391,7 @@ void FilesystemObject::fill_integrity_level()
 	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
 	PSECURITY_DESCRIPTOR pSD = NULL;
 	PACL acl = 0;
-	GetNamedSecurityInfoA(this->path_.c_str(), SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION, 0, 0, 0, &acl, &pSD);
+	GetNamedSecurityInfoW(this->path_.c_str(), SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION, 0, 0, 0, &acl, &pSD);
 
 	{
 		if (0 != acl && 0 < acl->AceCount)
@@ -416,15 +416,15 @@ void FilesystemObject::fill_integrity_level()
 	}
 
 	if (integrityLevel == SECURITY_MANDATORY_UNTRUSTED_RID)
-		this->integrity_level = "Untrusted";
+		this->integrity_level = L"Untrusted";
 	else if (integrityLevel == SECURITY_MANDATORY_LOW_RID)
-		this->integrity_level = "Low Integrity";
+		this->integrity_level = L"Low Integrity";
 	else if (integrityLevel == SECURITY_MANDATORY_MEDIUM_RID)
-		this->integrity_level = "Medium Integrity";
+		this->integrity_level = L"Medium Integrity";
 	else if (integrityLevel == SECURITY_MANDATORY_HIGH_RID)
-		this->integrity_level = "High Integrity";
+		this->integrity_level = L"High Integrity";
 	else if (integrityLevel == SECURITY_MANDATORY_SYSTEM_RID)
-		this->integrity_level = "System Integrity";
+		this->integrity_level = L"System Integrity";
 
 	return;
 
@@ -463,8 +463,8 @@ void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
 		ExitProcess(dw);
 }
 
-std::string FilesystemObject::WsToCommonString(const WCHAR * wcharstring) const
+std::wstring FilesystemObject::WsToCommonString(const WCHAR * wcharstring) const
 {
 	std::wstring ws(wcharstring);
-	return std::string(ws.begin(), ws.end());
+	return std::wstring(ws.begin(), ws.end());
 }

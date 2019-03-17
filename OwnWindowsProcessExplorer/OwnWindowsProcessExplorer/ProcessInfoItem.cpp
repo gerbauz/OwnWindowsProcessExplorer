@@ -1,6 +1,6 @@
 #include "ProcessInfoItem.h"
 
-void ProcessInfoItem::add_to_dll_list(std::string dll_name)
+void ProcessInfoItem::add_to_dll_list(std::wstring dll_name)
 {
 	dll_list_.push_back(dll_name);
 }
@@ -210,25 +210,25 @@ void ProcessInfoItem::fill_integrity_level()
 
 		if (dwIntegrityLevel == SECURITY_MANDATORY_UNTRUSTED_RID)
 		{
-			this->integrity_level_ = "Untrusted";
+			this->integrity_level_ = L"Untrusted";
 		}
 		else if (dwIntegrityLevel == SECURITY_MANDATORY_LOW_RID)
 		{
-			this->integrity_level_ = "Low Integrity";
+			this->integrity_level_ = L"Low Integrity";
 		}
 		else if (dwIntegrityLevel >= SECURITY_MANDATORY_MEDIUM_RID &&
 			dwIntegrityLevel < SECURITY_MANDATORY_HIGH_RID)
 		{
-			this->integrity_level_ = "Medium Integrity";
+			this->integrity_level_ = L"Medium Integrity";
 		}
 		else if (dwIntegrityLevel >= SECURITY_MANDATORY_HIGH_RID &&
 			dwIntegrityLevel < SECURITY_MANDATORY_SYSTEM_RID)
 		{
-			this->integrity_level_ = "High Integrity";
+			this->integrity_level_ = L"High Integrity";
 		}
 		else if (dwIntegrityLevel >= SECURITY_MANDATORY_SYSTEM_RID)
 		{
-			this->integrity_level_ = "System Integrity";
+			this->integrity_level_ = L"System Integrity";
 		}
 		CloseHandle(hToken);
 		CloseHandle(hProcess);
@@ -292,35 +292,35 @@ void ProcessInfoItem::fill_privileges()
 		for (DWORD j = 0; j < pToken->PrivilegeCount; j++)
 		{
 			DWORD dwSize = 0;
-			LookupPrivilegeName(NULL, &pToken->Privileges[j].Luid, NULL, &dwSize);
+			LookupPrivilegeNameW(NULL, &pToken->Privileges[j].Luid, NULL, &dwSize);
 
-			LPSTR szName = new CHAR[dwSize + 1];
+			LPWSTR szName = new WCHAR[dwSize + 1];
 
-			LookupPrivilegeNameA(NULL, &pToken->Privileges[j].Luid, szName, &dwSize);
+			LookupPrivilegeNameW(NULL, &pToken->Privileges[j].Luid, szName, &dwSize);
 
-			std::pair<std::string, std::string> privileges_pair;
+			std::pair<std::wstring, std::wstring> privileges_pair;
 
 			privileges_pair.first = szName;
 
 			if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED_BY_DEFAULT)
 			{
-				privileges_pair.second = "Enabled";
+				privileges_pair.second = L"Enabled";
 			}
 			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED)
 			{
-				privileges_pair.second = "Enabled by default";
+				privileges_pair.second = L"Enabled by default";
 			}
 			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_REMOVED)
 			{
-				privileges_pair.second = "Removed";
+				privileges_pair.second = L"Removed";
 			}
 			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_USED_FOR_ACCESS)
 			{
-				privileges_pair.second = "Used for access";
+				privileges_pair.second = L"Used for access";
 			}
 			else
 			{
-				privileges_pair.second = "Disabled";
+				privileges_pair.second = L"Disabled";
 			}
 			privileges_list_.push_back(privileges_pair);
 		}
@@ -383,11 +383,11 @@ ProcessInfoItem::ProcessInfoItem(
 	//DWORD owner_sid,
 	DWORD parent_pid,
 	DWORD pid,
-	//std::string file_path,
-	//std::string owner_name,
-	//std::string parent_name,
-    std::string process_name//,
-	//std::vector<std::string> dll_list
+	//std::wstring file_path,
+	//std::wstring owner_name,
+	//std::wstring parent_name,
+    std::wstring process_name//,
+	//std::vector<std::wstring> dll_list
 ) :
 	//owner_sid_(owner_sid),
 	parent_pid_(parent_pid),

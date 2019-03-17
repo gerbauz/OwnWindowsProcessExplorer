@@ -11,18 +11,18 @@
 
 struct ACL_INFO
 {
-	std::string SID;
-	std::string username;
-	std::string sid_type;
-	std::string ace_type;
-	std::string mask;
-	std::vector<std::string> access_rights;
+	std::wstring SID;
+	std::wstring username;
+	std::wstring sid_type;
+	std::wstring ace_type;
+	std::wstring mask;
+	std::vector<std::wstring> access_rights;
 };
 
 class FilesystemObject
 {
 private:
-	std::string path_;
+	std::wstring path_;
 	void ErrorExit(LPTSTR lpszFunction);
 	void fill_acl_info();
 	void fill_owner();
@@ -33,22 +33,22 @@ private:
 	//void change_
 
 
-	std::string fill_sid(PSID);
-	std::string fill_sid_type(PSID);
-	BOOL sid_to_text(PSID, char*, int);
-	std::string fill_username(PSID);
-	std::string fill_ace_type(BYTE);
-	std::string fill_mask(ACCESS_MASK);
-	std::vector<std::string> fill_access_rights(ACCESS_MASK);
-	std::string WsToCommonString(const WCHAR* wcharstring) const;
+	std::wstring fill_sid(PSID);
+	std::wstring fill_sid_type(PSID);
+	BOOL sid_to_text(PSID, wchar_t*, int);
+	std::wstring fill_username(PSID);
+	std::wstring fill_ace_type(BYTE);
+	std::wstring fill_mask(ACCESS_MASK);
+	std::vector<std::wstring> fill_access_rights(ACCESS_MASK);
+	std::wstring WsToCommonString(const WCHAR* wcharstring) const;
 	
 
 
 public:
-	FilesystemObject(std::string);
+	FilesystemObject(std::wstring);
 	std::vector<ACL_INFO> data_acl;
-	std::string owner;
-	std::string integrity_level;
+	std::wstring owner;
+	std::wstring integrity_level;
 
 	~FilesystemObject();
 };
