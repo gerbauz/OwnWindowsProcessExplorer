@@ -24,12 +24,18 @@
     <ClCompile Include="ProcessInfoItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FilesystemObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProcessInfoItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProcessInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FilesystemObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -89,7 +89,6 @@ BOOL ProcessInfoItem::change_integrity_level(int new_level)
 
 }
 
-
 BOOL ProcessInfoItem::change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
 {
 	HANDLE hProcess = OpenProcess(
@@ -151,12 +150,13 @@ BOOL ProcessInfoItem::change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivi
 
 	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
 	{
-	//	ErrorExit(TEXT("The token does not have the specified privilege. \n"));
+		//ErrorExit(TEXT("The token does not have the specified privilege. \n"));
 		return FALSE;
 	}
 
 	return TRUE;
 }
+
 
 
 //void ProcessInfoItem::check_ASLR()

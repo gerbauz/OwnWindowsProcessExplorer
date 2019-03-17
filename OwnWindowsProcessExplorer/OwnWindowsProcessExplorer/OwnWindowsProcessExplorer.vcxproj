@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FilesystemObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProcessInfo.cpp" />
     <ClCompile Include="ProcessInfoItem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FilesystemObject.h" />
     <ClInclude Include="ProcessInfo.h" />
     <ClInclude Include="ProcessInfoItem.h" />
   </ItemGroup>

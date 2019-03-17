@@ -30,10 +30,10 @@ void ProcessInfo::print_process_list()
 				//std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
 			}
 		}
-		/*if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
+		if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
 		{
 			process_list[i]->change_privileges(SE_DEBUG_NAME, TRUE);
-		}*/
+		}
 
 		//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
 		//std::cout << " PATH:" << process_list[i]->file_path_;
