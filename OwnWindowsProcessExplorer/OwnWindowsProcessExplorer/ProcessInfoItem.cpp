@@ -5,7 +5,6 @@ void ProcessInfoItem::add_to_dll_list(std::string dll_name)
 	dll_list_.push_back(dll_name);
 }
 
-
 BOOL ProcessInfoItem::change_integrity_level(int new_level)
 {
 	
@@ -399,6 +398,8 @@ ProcessInfoItem::ProcessInfoItem(
 	process_name_(process_name)//,
 	//dll_list_(dll_list)
 {
+	fill_integrity_level();
+	fill_privileges();
 }
 void ProcessInfoItem::ErrorExit(LPTSTR lpszFunction)
 {

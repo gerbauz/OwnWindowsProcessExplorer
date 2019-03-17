@@ -19,38 +19,37 @@ void ProcessInfo::print_process_list()
 {
 	setlocale(LC_ALL, "Russian");
 
-/*	for (size_t i = 0; i < process_list.size(); i++)
-	{
-		std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
-		std::cout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
-		if (!(process_list[i]->privileges_list_.empty()))
+	/*	for (size_t i = 0; i < process_list.size(); i++)
 		{
-			for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
+			std::cout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
+			std::cout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
+			if (!(process_list[i]->privileges_list_.empty()))
 			{
-				//std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
+				for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
+				{
+					std::cout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
+				}
+			}
+			if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
+			{
+				process_list[i]->change_privileges(SE_DEBUG_NAME, TRUE);
 			}
 		}
-		if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
-		{
-			process_list[i]->change_privileges(SE_DEBUG_NAME, TRUE);
-		}
+	}
+			//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
+			//std::cout << " PATH:" << process_list[i]->file_path_;
+			//std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
+			//std::cout << " PARENT NAME:" << process_list[i]->parent_name_;
+			//std::cout << " OWNER NAME: " << process_list[i]->owner_name_;
+			//std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
 
-		//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
-		//std::cout << " PATH:" << process_list[i]->file_path_;
-		//std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
-		//std::cout << " PARENT NAME:" << process_list[i]->parent_name_;
-		//std::cout << " OWNER NAME: " << process_list[i]->owner_name_;
-		//std::cout << " OWNER SID: " << process_list[i]->owner_sid_string_ << std::endl;
-
-		/*if (!(process_list[i]->dll_list_.empty()))
-		{
-			std::cout << "DLLs:" << std::endl;
-			for(int j=0;j<process_list[i]->dll_list_.size();j++)
-				std::cout << process_list[i]->dll_list_[j] << std::endl;
-		}*/
-	//}
-
-
+			/*if (!(process_list[i]->dll_list_.empty()))
+			{
+				std::cout << "DLLs:" << std::endl;
+				for(int j=0;j<process_list[i]->dll_list_.size();j++)
+					std::cout << process_list[i]->dll_list_[j] << std::endl;
+			}*/
+			//}
 
 }
 
