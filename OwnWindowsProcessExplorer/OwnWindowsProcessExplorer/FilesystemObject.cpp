@@ -128,13 +128,13 @@ FilesystemObject::FilesystemObject(std::string path) :
 	path_(path)
 {
 	fill_acl_info();
+	fill_owner();
+	fill_integrity_level();
 }
 
 
 FilesystemObject::~FilesystemObject()
 {
-
-
 }
 
 void FilesystemObject::fill_acl_info()
@@ -143,7 +143,6 @@ void FilesystemObject::fill_acl_info()
 
 	ACL_SIZE_INFORMATION acl_info;
 
-	//PACCESS_ALLOWED_ACE pAce = 0;
 	LPVOID pAce;
 
 	PSID pSID;
@@ -188,7 +187,6 @@ void FilesystemObject::fill_acl_info()
 		this->data_acl.push_back(acl_struct);
 	}
 }
-
 
 std::string FilesystemObject::fill_sid(PSID pSID)
 {
@@ -346,6 +344,92 @@ BOOL FilesystemObject::sid_to_text(PSID ps, char *buf, int bufSize)
 
 	return TRUE;
 }
+
+void FilesystemObject::fill_owner()
+{
+	PSECURITY_DESCRIPTOR pSD;
+	DWORD needLength=0;
+	if (!GetFileSecurityA(
+		this->path_.c_str(),
+		OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+		0,
+		0,
+		&needLength))
+	
+
+	pSD = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, needLength);
+
+	if (!GetFileSecurityA(
+		this->path_.c_str(),
+		OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+		pSD,
+		needLength,
+		&needLength))
+	{
+		ErrorExit(TEXT("GetFileSecurity"));
+	}
+
+	PSID pSID;
+	BOOL pFlag = FALSE;
+	GetSecurityDescriptorOwner(pSD, &pSID, &pFlag);
+	char UserName[MAX_NAME];
+	char DomainName[MAX_NAME];
+	DWORD UserLen = MAX_NAME;
+	DWORD DomainLen = MAX_NAME;
+	SID_NAME_USE snu;
+	if (!LookupAccountSidA(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &snu))
+	{
+		ErrorExit(TEXT("LookupAccountSidA"));
+	}
+	this->owner = UserName;
+
+	return;
+}
+
+void FilesystemObject::fill_integrity_level()
+{
+	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
+	PSECURITY_DESCRIPTOR pSD = NULL;
+	PACL acl = 0;
+	GetNamedSecurityInfoA(this->path_.c_str(), SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION, 0, 0, 0, &acl, &pSD);
+
+	{
+		if (0 != acl && 0 < acl->AceCount)
+		{
+			SYSTEM_MANDATORY_LABEL_ACE* ace = 0;
+			if (GetAce(acl, 0, reinterpret_cast<void**>(&ace)))
+			{
+				SID* sid = reinterpret_cast<SID*>(&ace->SidStart);
+				integrityLevel = sid->SubAuthority[0];
+			}
+		}
+
+		PWSTR stringSD;
+		ULONG stringSDLen = 0;
+
+		ConvertSecurityDescriptorToStringSecurityDescriptor(pSD, SDDL_REVISION_1, LABEL_SECURITY_INFORMATION, &stringSD, &stringSDLen);
+
+		if (pSD)
+		{
+			LocalFree(pSD);
+		}
+	}
+
+	if (integrityLevel == SECURITY_MANDATORY_UNTRUSTED_RID)
+		this->integrity_level = "Untrusted";
+	else if (integrityLevel == SECURITY_MANDATORY_LOW_RID)
+		this->integrity_level = "Low Integrity";
+	else if (integrityLevel == SECURITY_MANDATORY_MEDIUM_RID)
+		this->integrity_level = "Medium Integrity";
+	else if (integrityLevel == SECURITY_MANDATORY_HIGH_RID)
+		this->integrity_level = "High Integrity";
+	else if (integrityLevel == SECURITY_MANDATORY_SYSTEM_RID)
+		this->integrity_level = "System Integrity";
+
+	return;
+
+}
+
 
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
 {

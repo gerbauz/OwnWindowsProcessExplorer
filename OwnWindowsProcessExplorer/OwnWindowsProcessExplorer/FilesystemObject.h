@@ -6,6 +6,7 @@
 #include <aclapi.h>
 #include <strsafe.h>
 #include <vector>
+#include <Sddl.h>
 
 
 struct ACL_INFO
@@ -24,6 +25,9 @@ private:
 	std::string path_;
 	void ErrorExit(LPTSTR lpszFunction);
 	void fill_acl_info();
+	void fill_owner();
+	void fill_integrity_level();
+
 	std::string fill_sid(PSID);
 	std::string fill_sid_type(PSID);
 	BOOL sid_to_text(PSID, char*, int);
@@ -32,10 +36,14 @@ private:
 	std::string fill_mask(ACCESS_MASK);
 	std::vector<std::string> fill_access_rights(ACCESS_MASK);
 	std::string WsToCommonString(const WCHAR* wcharstring) const;
+	
+
 
 public:
 	FilesystemObject(std::string);
 	std::vector<ACL_INFO> data_acl;
+	std::string owner;
+	std::string integrity_level;
 
 	~FilesystemObject();
 };

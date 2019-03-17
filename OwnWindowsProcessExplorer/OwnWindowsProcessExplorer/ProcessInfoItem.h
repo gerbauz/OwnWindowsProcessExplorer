@@ -38,8 +38,9 @@ struct ProcessInfoItem
 	void add_to_dll_list(std::string dll_name);
 	void add_to_privileges(std::pair<std::string, std::string>);
 	BOOL change_integrity_level(int);
-	BOOL SetPrivilege(LPCWSTR lpszPrivilege, BOOL bEnablePrivilege); //Only for debug (up privilege for this app)
 	BOOL change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
+
+	BOOL SetPrivilege(LPCWSTR lpszPrivilege, BOOL bEnablePrivilege); //Only for debug (up privilege for this app)
 
 	//void check_ASLR();
 	//void check_DEP();

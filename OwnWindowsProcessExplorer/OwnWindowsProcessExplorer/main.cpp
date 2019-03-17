@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
 	//pi.make_process_list();
 	//pi.print_process_list();
 
-	FilesystemObject fo("C:\\");
-	for (size_t i = 0; i < fo.data_acl.size(); i++)
+	FilesystemObject fo("C:\\Users");
+/*	for (size_t i = 0; i < fo.data_acl.size(); i++)
 	{
 		std::cout << "USERNAME: " << fo.data_acl[i].username << std::endl;
 		std::cout << "SID: " << fo.data_acl[i].SID << std::endl;
@@ -28,7 +28,10 @@ int main(int argc, char* argv[])
 			std::cout << fo.data_acl[i].access_rights[j] << std::endl;
 		}
 		std::cout << std::endl;
-	}
+	}*/
+	//std::cout << "OWNER: " << fo.owner << std::endl;
+	std::cout << "INTEGRITY: " << fo.integrity_level << std::endl;
+
 	ExitProcess(0);
 
 	return 0;
