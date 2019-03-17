@@ -19,7 +19,7 @@ void ProcessInfo::print_process_list()
 {
 	setlocale(LC_ALL, "Russian");
 
-	/*	for (size_t i = 0; i < process_list.size(); i++)
+		for (size_t i = 0; i < process_list.size(); i++)
 		{
 			std::wcout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
 			std::wcout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
@@ -50,7 +50,6 @@ void ProcessInfo::print_process_list()
 					std::cout << process_list[i]->dll_list_[j] << std::endl;
 			}*/
 			//}
-}
 
 void ProcessInfo::make_process_list()
 {

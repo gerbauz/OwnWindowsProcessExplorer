@@ -430,6 +430,15 @@ void FilesystemObject::fill_integrity_level()
 
 }
 
+void FilesystemObject::change_owner(std::wstring new_owner)
+{
+
+
+
+
+}
+
+
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
 {
 		// Retrieve the system error message for the last-error code

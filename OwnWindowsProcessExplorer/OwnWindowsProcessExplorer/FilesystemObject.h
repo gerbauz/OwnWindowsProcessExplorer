@@ -29,8 +29,8 @@ private:
 	void fill_integrity_level();
 
 	void change_acl_info();
-	void change_owner();
-	//void change_
+	void change_owner(std::wstring);
+	void change_integrity_level();
 
 
 	std::wstring fill_sid(PSID);

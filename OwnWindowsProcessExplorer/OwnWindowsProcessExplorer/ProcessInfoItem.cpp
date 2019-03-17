@@ -236,7 +236,6 @@ void ProcessInfoItem::fill_integrity_level()
 
 void ProcessInfoItem::fill_privileges()
 {
-	
 		HANDLE hProcess;
 
 		hProcess = OpenProcess(
@@ -304,11 +303,11 @@ void ProcessInfoItem::fill_privileges()
 
 			if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED_BY_DEFAULT)
 			{
-				privileges_pair.second = L"Enabled";
+				privileges_pair.second = L"Enabled by default";
 			}
 			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_ENABLED)
 			{
-				privileges_pair.second = L"Enabled by default";
+				privileges_pair.second = L"Enabled";
 			}
 			else if (pToken->Privileges[j].Attributes & SE_PRIVILEGE_REMOVED)
 			{
