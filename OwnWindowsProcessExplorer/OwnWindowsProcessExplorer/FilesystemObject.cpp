@@ -457,54 +457,97 @@ void FilesystemObject::fill_integrity_level()
 
 }
 
-/*BOOL FilesystemObject::change_owner(std::wstring new_owner)
+BOOL FilesystemObject::change_owner(std::wstring new_owner)
 {
-	SID_NAME_USE SidType;
-	DWORD UserLen = new_owner.size();
-	DWORD dwSidSize = 0;
-	WCHAR szDomain[MAX_NAME] = { 0 };
-	DWORD dwDomainSize = MAX_NAME;
+	PSID         sid = NULL;
+	DWORD        sid_size = 0;
+	WCHAR*	     domain = NULL;
+	DWORD        domain_size = 0;
+	SID_NAME_USE use;
 
-	LookupAccountNameW(
-		NULL,
-		new_owner.c_str(),
-		NULL,
-		&dwSidSize,
-		szDomain,
-		&dwDomainSize,
-		&SidType);	
+	SetPrivilege(SE_TAKE_OWNERSHIP_NAME, TRUE);
 
-	PSID pSID = (PSID)LocalAlloc(LMEM_FIXED, dwSidSize);
-
-	if (!LookupAccountNameW(
-		NULL,
-		new_owner.c_str(),
-		pSID,
-		&dwSidSize,
-		szDomain,
-		&dwDomainSize,
-		&SidType))
+	LookupAccountName(NULL, new_owner.c_str(), sid, &sid_size, domain, &domain_size, &use);
+	sid = (PSID)LocalAlloc(LMEM_FIXED, sid_size);
+	domain = (WCHAR*)malloc(domain_size * sizeof(WCHAR));
+	if (!LookupAccountName(NULL, new_owner.c_str(), sid, &sid_size, domain, &domain_size, &use))
 	{
-		ErrorExit(TEXT("LookupAccountNameW"));
+		//ErrorExit(TEXT("LookupAccountNameW"));
 		return FALSE;
 	}
-
+	int a;
 	if (SetNamedSecurityInfoW(
 		const_cast<LPWSTR>(this->path_.c_str()),
 		SE_FILE_OBJECT,
 		OWNER_SECURITY_INFORMATION,
-		&pSID,
+		sid,
 		NULL,
 		NULL,
-		NULL!=ERROR_SUCCESS))
+		NULL) != ERROR_SUCCESS)
 	{
-		//ErrorExit(TEXT("SetNamedSecurityInfoW"));
-	//	return FALSE;
+		//ErrorExit(TEXT("LookupAccountNameW"));
+		return FALSE;
 	}
-	
+
 	return TRUE;
 
-}*/
+}
+
+BOOL FilesystemObject::change_integrity_level(int new_integrity_level)
+{
+	LPCWSTR INTEGRITY_SDDL_SACL_W;
+
+	if (new_integrity_level == LOW_INTEGRITY)
+		INTEGRITY_SDDL_SACL_W = L"S:(ML;;NR;;;LW)";
+	else if (new_integrity_level == MEDIUM_INTEGRITY)
+		INTEGRITY_SDDL_SACL_W = L"S:(ML;;NR;;;ME)";
+	else if (new_integrity_level == HIGH_INTEGRITY)
+		INTEGRITY_SDDL_SACL_W = L"S:(ML;;NR;;;HI)";
+
+	DWORD dwErr = ERROR_SUCCESS;
+	PSECURITY_DESCRIPTOR pSD = NULL;
+
+	PACL pSacl = NULL;
+	BOOL fSaclPresent = FALSE;
+	BOOL fSaclDefaulted = FALSE;
+
+	if (ConvertStringSecurityDescriptorToSecurityDescriptorW(
+		INTEGRITY_SDDL_SACL_W,
+		SDDL_REVISION_1,
+		&pSD,
+		NULL))
+	{
+		if (GetSecurityDescriptorSacl(
+			pSD,
+			&fSaclPresent,
+			&pSacl,
+			&fSaclDefaulted))
+		{
+			dwErr = SetNamedSecurityInfoW(
+				const_cast<LPWSTR>(this->path_.c_str()),
+				SE_FILE_OBJECT,
+				LABEL_SECURITY_INFORMATION,
+				NULL,
+				NULL,
+				NULL,
+				pSacl);
+
+			if (dwErr == ERROR_SUCCESS)
+			{
+				if (pSD)
+				{
+					LocalFree(pSD);
+				}
+				return TRUE;
+			}
+		}
+	}
+	if (pSD)
+	{
+		LocalFree(pSD);
+	}
+	return FALSE;
+}
 
 
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
@@ -544,4 +587,36 @@ std::wstring FilesystemObject::WsToCommonString(const WCHAR * wcharstring) const
 {
 	std::wstring ws(wcharstring);
 	return std::wstring(ws.begin(), ws.end());
+}
+
+BOOL FilesystemObject::SetPrivilege(LPCWSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+	TOKEN_PRIVILEGES priv = { 0,0,0,0 };
+	HANDLE hToken = NULL;
+	LUID luid = { 0,0 };
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
+	{
+		if (hToken)
+			CloseHandle(hToken);
+		return FALSE;
+	}
+	if (!LookupPrivilegeValueW(0, lpszPrivilege, &luid))
+	{
+		if (hToken)
+			CloseHandle(hToken);
+		return FALSE;
+	}
+	priv.PrivilegeCount = 1;
+	priv.Privileges[0].Luid = luid;
+	priv.Privileges[0].Attributes = bEnablePrivilege ? SE_PRIVILEGE_ENABLED : SE_PRIVILEGE_REMOVED;
+
+	if (!AdjustTokenPrivileges(hToken, FALSE, &priv, 0, 0, 0))
+	{
+		if (hToken)
+			CloseHandle(hToken);
+		return FALSE;
+	}
+	if (hToken)
+		CloseHandle(hToken);
+	return TRUE;
 }

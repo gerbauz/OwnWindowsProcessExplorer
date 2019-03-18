@@ -1,6 +1,13 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define MAX_NAME 256
+
+#define UNTRUSTED_INTEGRITY 0
+#define LOW_INTEGRITY 1
+#define MEDIUM_INTEGRITY 2
+#define HIGH_INTEGRITY 3
+#define SYSTEM_INTEGRITY 4
+
 #include <string>
 #include <Windows.h>
 #include <aclapi.h>
@@ -23,8 +30,8 @@ class FilesystemObject
 {
 private:
 	std::wstring path_;
-	void ErrorExit(LPTSTR lpszFunction);
-
+	void ErrorExit(LPTSTR);
+	BOOL SetPrivilege(LPCWSTR, BOOL);
 
 
 	std::wstring fill_sid(PSID);
@@ -50,7 +57,7 @@ public:
 
 	BOOL change_acl_info();
 	BOOL change_owner(std::wstring);
-	BOOL change_integrity_level();
+	BOOL change_integrity_level(int);
 
 
 	~FilesystemObject();
