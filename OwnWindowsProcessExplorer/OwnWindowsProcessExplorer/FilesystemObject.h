@@ -24,9 +24,6 @@ class FilesystemObject
 private:
 	std::wstring path_;
 	void ErrorExit(LPTSTR lpszFunction);
-	void fill_acl_info();
-	void fill_owner();
-	void fill_integrity_level();
 
 
 
@@ -47,6 +44,9 @@ public:
 	std::wstring owner;
 	std::wstring integrity_level;
 
+	void fill_acl_info();
+	void fill_owner();
+	void fill_integrity_level();
 
 	BOOL change_acl_info();
 	BOOL change_owner(std::wstring);
