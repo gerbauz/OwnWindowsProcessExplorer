@@ -8,6 +8,10 @@
 #define HIGH_INTEGRITY 3
 #define SYSTEM_INTEGRITY 4
 
+
+#define DENY_ACCSS 0
+#define SET_ACCSS 1
+
 #include <string>
 #include <Windows.h>
 #include <aclapi.h>
@@ -55,7 +59,7 @@ public:
 	void fill_owner();
 	void fill_integrity_level();
 
-	BOOL change_acl_info();
+	BOOL change_acl_info(std::wstring name,DWORD mask,int ace_type);
 	BOOL change_owner(std::wstring);
 	BOOL change_integrity_level(int);
 

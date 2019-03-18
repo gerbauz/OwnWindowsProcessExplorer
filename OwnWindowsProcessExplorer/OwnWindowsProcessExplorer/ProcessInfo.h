@@ -29,8 +29,12 @@ public:
     void fill_parent_name();
     void fill_owner();
 	void fill_process_bit();
-	void fill_ASLR();
-	void fill_DEP();
+
+	void fill_ASLR_win10();
+	void fill_DEP_win10();
+
+	void fill_ASLR_win7();
+	void fill_DEP_win7();
 	
     //void make_dll_list();
 

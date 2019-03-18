@@ -549,6 +549,81 @@ BOOL FilesystemObject::change_integrity_level(int new_integrity_level)
 	return FALSE;
 }
 
+BOOL FilesystemObject::change_acl_info(std::wstring name, DWORD mask, int ace_type)
+{
+	DWORD dwRes = 0;
+	PACL pOldDACL = NULL, pNewDACL = NULL;
+	PSECURITY_DESCRIPTOR pSD = NULL;
+	EXPLICIT_ACCESS ea;
+
+	dwRes = GetNamedSecurityInfoW(
+		this->path_.c_str(),
+		SE_FILE_OBJECT,
+		DACL_SECURITY_INFORMATION,
+		NULL,
+		NULL,
+		&pOldDACL,
+		NULL,
+		&pSD);
+	if (ERROR_SUCCESS != dwRes)
+	{
+		if (pSD != NULL)
+			LocalFree((HLOCAL)pSD);
+		if (pNewDACL != NULL)
+			LocalFree((HLOCAL)pNewDACL);
+		return FALSE;
+	}
+
+	ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
+	ea.grfAccessPermissions = mask;
+	if (ace_type == DENY_ACCSS)
+		ea.grfAccessMode = DENY_ACCESS;
+	else if (ace_type == SET_ACCSS)
+		ea.grfAccessMode = SET_ACCESS;
+	ea.grfInheritance = NO_INHERITANCE;
+	ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
+	//	ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
+	ea.Trustee.ptstrName = const_cast<LPWSTR>(name.c_str());
+
+	dwRes = SetEntriesInAcl(
+		1,
+		&ea,
+		pOldDACL,
+		&pNewDACL);
+	if (ERROR_SUCCESS != dwRes)
+	{
+		if (pSD != NULL)
+			LocalFree((HLOCAL)pSD);
+		if (pNewDACL != NULL)
+			LocalFree((HLOCAL)pNewDACL);
+		return FALSE;
+	}
+
+	dwRes = SetNamedSecurityInfoW(
+		const_cast<LPWSTR>(this->path_.c_str()),
+		SE_FILE_OBJECT,
+		DACL_SECURITY_INFORMATION,
+		NULL,
+		NULL,
+		pNewDACL,
+		NULL);
+	if (ERROR_SUCCESS != dwRes)
+	{
+		if (pSD != NULL)
+			LocalFree((HLOCAL)pSD);
+		if (pNewDACL != NULL)
+			LocalFree((HLOCAL)pNewDACL);
+		return FALSE;
+	}
+
+	if (pSD != NULL)
+		LocalFree((HLOCAL)pSD);
+	if (pNewDACL != NULL)
+		LocalFree((HLOCAL)pNewDACL);
+
+	return TRUE;
+}
+
 
 void FilesystemObject::ErrorExit(LPTSTR lpszFunction)
 {

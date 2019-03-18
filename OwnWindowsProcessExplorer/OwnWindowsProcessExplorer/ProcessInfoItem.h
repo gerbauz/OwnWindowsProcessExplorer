@@ -17,18 +17,18 @@
 
 struct ProcessInfoItem
 {
-	bool							DEP_usage;
-	bool							ASLR_usage;
+	std::wstring					DEP_usage;
+	std::wstring					ASLR_usage;
 	std::wstring 					type_of_process_;
 	PSID							owner_sid_;
-	std::wstring						owner_sid_string_;
+	std::wstring					owner_sid_string_;
 	DWORD							parent_pid_;
 	DWORD							pid_;
-	std::wstring						file_path_;
-	std::wstring						owner_name_;
-	std::wstring						parent_name_;
-	std::wstring						process_name_;
-	std::wstring						integrity_level_;
+	std::wstring					file_path_;
+	std::wstring					owner_name_;
+	std::wstring					parent_name_;
+	std::wstring					process_name_;
+	std::wstring					integrity_level_;
 
 	std::vector<std::wstring>		dll_list_;
 	std::vector<std::pair<std::wstring, std::wstring>> privileges_list_;

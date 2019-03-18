@@ -330,54 +330,6 @@ void ProcessInfoItem::fill_privileges()
 }
 
 
-//void ProcessInfoItem::check_ASLR()
-//{
-//	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, this->pid_);
-//	_PROCESS_MITIGATION_ASLR_POLICY lpBuffer;
-//
-//	int success = 0;
-//
-//	success = GetProcessMitigationPolicy(
-//		hProcess,
-//		ProcessASLRPolicy,
-//		&lpBuffer,
-//		sizeof(lpBuffer));
-//
-//	if (success == FALSE)
-//		ErrorExit(TEXT("GetProcessMitigationPolicy"));
-//	
-//	if (lpBuffer.EnableBottomUpRandomization == 1)
-//		this->ASLR_usage = TRUE;
-//	else
-//		this->ASLR_usage = FALSE;
-//
-//	return;
-//}
-//
-//void ProcessInfoItem::check_DEP()
-//{
-//	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, this->pid_);
-//	_PROCESS_MITIGATION_DEP_POLICY lpBuffer;
-//
-//	int success = 0;
-//
-//	success = GetProcessMitigationPolicy(
-//		hProcess,
-//		ProcessDEPPolicy,
-//		&lpBuffer,
-//		sizeof(lpBuffer));
-//
-//	if (success == FALSE)
-//		ErrorExit(TEXT("GetProcessMitigationPolicy"));
-//
-//	if (lpBuffer.Enable == 1)
-//		this->DEP_usage = TRUE;
-//	else
-//		this->DEP_usage = FALSE;
-//
-//	return;
-//}
-
 
 
 ProcessInfoItem::ProcessInfoItem(
