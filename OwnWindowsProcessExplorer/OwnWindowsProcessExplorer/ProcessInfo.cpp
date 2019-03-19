@@ -22,20 +22,10 @@ void ProcessInfo::print_process_list()
 		for (size_t i = 0; i < process_list.size(); i++)
 		{
 			std::wcout << "ID: " << process_list[i]->pid_ << ' ' << "Name: " << process_list[i]->process_name_;
-			std::wcout << " Integrity: " << process_list[i]->integrity_level_ << std::endl;
-			if (!(process_list[i]->privileges_list_.empty()))
-			{
-				for (size_t j = 0; j < process_list[i]->privileges_list_.size(); j++)
-				{
-					std::wcout << process_list[i]->privileges_list_[j].first << " " << process_list[i]->privileges_list_[j].second << std::endl;
-				}
-			}
-			if (process_list[i]->pid_ == 10148) //TESTIING TO CHANGE PRIV
-			{
-				process_list[i]->change_privileges(SE_DEBUG_NAME, TRUE);
-			}
+			std::wcout << "ASLR: " << process_list[i]->ASLR_usage << " DEP: " << process_list[i]->DEP_usage << std::endl;
 		}
-	}
+}
+
 			//std::cout << "Type: " << process_list[i]->type_of_process_ << std::endl;
 			//std::cout << " PATH:" << process_list[i]->file_path_;
 			//std::cout << " PARENT PID:" << process_list[i]->parent_pid_;
@@ -58,9 +48,8 @@ void ProcessInfo::make_process_list()
 	fill_parent_name();
 	fill_owner();
 	fill_process_bit();
-
-	//fill_integrity_level();
-	//fill_privileges();
+	fill_ASLR_win7();
+	fill_DEP_win7();
 
 }
 
@@ -248,7 +237,7 @@ void ProcessInfo::fill_process_bit()
 
 }
 
-//void ProcessInfo::fill_ASLR()
+//void ProcessInfo::fill_ASLR_win10()
 //{
 //	for (size_t i = 0; i < process_list.size(); i++)
 //	{
@@ -266,25 +255,147 @@ void ProcessInfo::fill_process_bit()
 //				&lpBuffer,
 //				sizeof(lpBuffer));
 //		
-//			if (success == FALSE)
-//				ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//		if (success == FALSE)
+//		{
+//			continue;
+//			//ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//		}
 //			
-//			if (lpBuffer.EnableBottomUpRandomization == 1)
-//				process_list[i]->ASLR_usage = TRUE;
-//			else
-//				process_list[i]->ASLR_usage = FALSE;
+//		if (lpBuffer.EnableBottomUpRandomization == 1)
+//			process_list[i]->ASLR_usage = L"Enabled";
+//		else
+//			process_list[i]->ASLR_usage = L"Disabled";
 //		
-//			return;
+//
 //	}
 //
 //}
-
-//void ProcessInfo::fill_DEP()
+//
+//void ProcessInfo::fill_DEP_win10()
 //{
+//	for (size_t i = 0; i < process_list.size(); i++)
+//	{
+//		HANDLE hProcess = OpenProcess(
+//			PROCESS_QUERY_INFORMATION,
+//			FALSE,
+//			process_list[i]->pid_);
 //
+//		_PROCESS_MITIGATION_DEP_POLICY lpBuffer;
+//		int success = 0;
 //
+//		success = GetProcessMitigationPolicy(
+//			hProcess,
+//			ProcessDEPPolicy,
+//			&lpBuffer,
+//			sizeof(lpBuffer));
 //
+//		if (success == FALSE)
+//		{
+//			continue;
+//			//ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//		}
+//		if (lpBuffer.Enable == 1)
+//			process_list[i]->DEP_usage = L"Enabled";
+//		else
+//			process_list[i]->DEP_usage = L"Disabled";
+//		
+//		CloseHandle(hProcess);
+//	}
+//	return;
 //}
+
+void ProcessInfo::fill_ASLR_win7()
+{
+
+	for (size_t i = 0; i < process_list.size(); i++)
+	{
+		IMAGE_DOS_HEADER pDos = { 0 };
+		IMAGE_NT_HEADERS pNT = { 0 };
+		void *BaseAddress;
+
+		MODULEENTRY32 ME32;
+		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_list[i]->pid_);
+
+		if (INVALID_HANDLE_VALUE == hModule) continue;
+
+		ME32.dwSize = sizeof(ME32);
+
+		if (Module32First(hModule, &ME32) == FALSE)
+		{
+			CloseHandle(hModule);
+			continue;
+		}
+
+		CloseHandle(hModule);
+
+		BaseAddress = ME32.modBaseAddr;
+
+		HANDLE hProcess = OpenProcess(PROCESS_VM_READ, FALSE, process_list[i]->pid_);
+
+		if (hProcess == NULL) continue;
+
+		if (0 == ReadProcessMemory(hProcess, BaseAddress, (char*)&pDos, sizeof(IMAGE_DOS_HEADER), 0))
+		{
+			CloseHandle(hProcess);
+			continue;
+		}
+
+		if (0 == ReadProcessMemory(hProcess, (void*)((unsigned long)BaseAddress + pDos.e_lfanew), &pNT, sizeof(IMAGE_NT_HEADERS), 0))
+		{
+			CloseHandle(hProcess);
+			continue;
+		}
+
+		CloseHandle(hProcess);
+
+		if (pNT.Signature == IMAGE_NT_SIGNATURE)
+		{
+			if (pNT.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE)
+				process_list[i]->ASLR_usage = L"Enabled";
+			else
+				process_list[i]->ASLR_usage = L"Disabled";
+		}
+	}
+}
+
+void ProcessInfo::fill_DEP_win7()
+{
+	for (size_t i = 0; i < process_list.size(); i++)
+	{
+		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, process_list[i]->pid_);
+
+		if (NULL == hProcess)
+		{
+			continue;
+		}
+
+		DWORD Flags;
+		BOOL Permanent = FALSE;
+
+		if (FALSE == GetProcessDEPPolicy(hProcess, &Flags, &Permanent))
+		{
+			CloseHandle(hProcess);
+
+			if ( process_list[i]->type_of_process_ == L"x64")
+			{
+				process_list[i]->DEP_usage = L"Enabled (permanent)";
+			}
+		}
+		else
+		{
+			if (Flags == 0)
+				process_list[i]->DEP_usage = (Permanent == TRUE) ? L"Disabled (permanent)" : L"Disabled";
+			else if (Flags == 0x00000001 || Flags == 3)
+				process_list[i]->DEP_usage = (Permanent == TRUE) ? L"Enabled (permanent)" : L"Enabled";
+			else if (Flags == 0x00000002)
+				process_list[i]->DEP_usage = L"DEP-ATL thunk emulation is disabled for the specified process.";
+		}
+		CloseHandle(hProcess);
+	}
+
+}
+
+
 
 std::vector<std::shared_ptr<ProcessInfoItem> > ProcessInfo::get_process_list() const
 {
