@@ -160,20 +160,22 @@ void FilesystemObject::fill_acl_info()
 		NULL,
 		&pSD))
 	{
-		ErrorExit(TEXT("GETNAMED"));
+		//ErrorExit(TEXT("GETNAMED"));
 	}
 
 	if (!GetAclInformation(acl, &acl_info, sizeof(ACL_SIZE_INFORMATION), AclSizeInformation))
 	{
-		ErrorExit(TEXT("GETACLINFO"));
+		//ErrorExit(TEXT("GETACLINFO"));
 	}
+
+	this->data_acl.clear();
 
 	int offset = 0;
 	for (DWORD i = 0; i < acl_info.AceCount; i++)
 	{
 		if (!GetAce(acl, i, &pAce))
 		{
-			ErrorExit(TEXT("GETACE"));
+			//ErrorExit(TEXT("GETACE"));
 		}
 
 		ACL_INFO acl_struct;
@@ -213,7 +215,7 @@ std::wstring FilesystemObject::fill_username(PSID pSID)
 	wchar_t DomainName[MAX_NAME];
 	if (!LookupAccountSidW(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &TypeOfpSid))
 	{
-		ErrorExit(TEXT("Lookup"));
+		//ErrorExit(TEXT("Lookup"));
 	}
 	return UserName;
 	//return UserName;
@@ -229,7 +231,7 @@ std::wstring FilesystemObject::fill_sid_type(PSID pSID)
 	char DomainName[MAX_NAME];
 	if (!LookupAccountSidA(NULL, pSID, UserName, &UserLen, DomainName, &DomainLen, &TypeOfpSid))
 	{
-		ErrorExit(TEXT("Lookup"));
+		//ErrorExit(TEXT("Lookup"));
 	}
 
 	for (size_t i = 0; i < 10; i++)
