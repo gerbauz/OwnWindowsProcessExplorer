@@ -11,8 +11,7 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
-
-
+#include <QVariant>
 
 
 struct ProcessInfoItem
@@ -62,3 +61,5 @@ struct ProcessInfoItem
 
 	~ProcessInfoItem() {};
 };
+
+Q_DECLARE_METATYPE(std::shared_ptr<ProcessInfoItem>);
