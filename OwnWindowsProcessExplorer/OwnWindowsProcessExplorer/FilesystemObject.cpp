@@ -376,7 +376,7 @@ void FilesystemObject::fill_owner()
 		needLength,
 		&needLength))
 	{
-//		ErrorExit(TEXT("GetFileSecurity"));
+		ErrorExit(TEXT("GetFileSecurity"));
 	}
 
 	PSID pSID;
@@ -396,7 +396,7 @@ void FilesystemObject::fill_owner()
 		&DomainLen,
 		&snu))
 	{
-//		ErrorExit(TEXT("LookupAccountSidA"));
+		ErrorExit(TEXT("LookupAccountSidA"));
 		return;
 	}
 	this->owner = UserName;

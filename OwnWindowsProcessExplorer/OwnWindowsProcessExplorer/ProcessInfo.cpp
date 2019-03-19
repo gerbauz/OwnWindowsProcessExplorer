@@ -48,10 +48,8 @@ void ProcessInfo::make_process_list()
 	fill_parent_name();
 	fill_owner();
 	fill_process_bit();
-//	fill_ASLR_win7();
-    fill_ASLR_win10();
-    fill_DEP_win7();
-//    fill_DEP_win10();
+	fill_ASLR_win7();
+	fill_DEP_win7();
 
 }
 
@@ -239,72 +237,72 @@ void ProcessInfo::fill_process_bit()
 
 }
 
-void ProcessInfo::fill_ASLR_win10()
-{
-    for (size_t i = 0; i < process_list.size(); i++)
-    {
-        HANDLE hProcess = OpenProcess(
-            PROCESS_QUERY_INFORMATION,
-            FALSE,
-            process_list[i]->pid_);
-
-        _PROCESS_MITIGATION_ASLR_POLICY lpBuffer;
-        int success = 0;
-
-        success = GetProcessMitigationPolicy(
-                hProcess,
-                ProcessASLRPolicy,
-                &lpBuffer,
-                sizeof(lpBuffer));
-
-        if (success == FALSE)
-        {
-            continue;
-            //ErrorExit(TEXT("GetProcessMitigationPolicy"));
-        }
-
-        if (lpBuffer.EnableBottomUpRandomization == 1)
-            process_list[i]->ASLR_usage = L"Enabled";
-        else
-            process_list[i]->ASLR_usage = L"Disabled";
-
-
-    }
-
-}
-
-void ProcessInfo::fill_DEP_win10()
-{
-    for (size_t i = 0; i < process_list.size(); i++)
-    {
-        HANDLE hProcess = OpenProcess(
-            PROCESS_QUERY_INFORMATION,
-            FALSE,
-            process_list[i]->pid_);
-
-        _PROCESS_MITIGATION_DEP_POLICY lpBuffer;
-        int success = 0;
-
-        success = GetProcessMitigationPolicy(
-            hProcess,
-            ProcessDEPPolicy,
-            &lpBuffer,
-            sizeof(lpBuffer));
-
-        if (success == FALSE)
-        {
-            continue;
-            //ErrorExit(TEXT("GetProcessMitigationPolicy"));
-        }
-        if (lpBuffer.Enable == 1)
-            process_list[i]->DEP_usage = L"Enabled";
-        else
-            process_list[i]->DEP_usage = L"Disabled";
-
-        CloseHandle(hProcess);
-    }
-    return;
-}
+//void ProcessInfo::fill_ASLR_win10()
+//{
+//	for (size_t i = 0; i < process_list.size(); i++)
+//	{
+//		HANDLE hProcess = OpenProcess(
+//			PROCESS_QUERY_INFORMATION,
+//			FALSE,
+//			process_list[i]->pid_);
+//		
+//		_PROCESS_MITIGATION_ASLR_POLICY lpBuffer;
+//		int success = 0;
+//		
+//		success = GetProcessMitigationPolicy(
+//				hProcess,
+//				ProcessASLRPolicy,
+//				&lpBuffer,
+//				sizeof(lpBuffer));
+//		
+//		if (success == FALSE)
+//		{
+//			continue;
+//			//ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//		}
+//			
+//		if (lpBuffer.EnableBottomUpRandomization == 1)
+//			process_list[i]->ASLR_usage = L"Enabled";
+//		else
+//			process_list[i]->ASLR_usage = L"Disabled";
+//		
+//
+//	}
+//
+//}
+//
+//void ProcessInfo::fill_DEP_win10()
+//{
+//	for (size_t i = 0; i < process_list.size(); i++)
+//	{
+//		HANDLE hProcess = OpenProcess(
+//			PROCESS_QUERY_INFORMATION,
+//			FALSE,
+//			process_list[i]->pid_);
+//
+//		_PROCESS_MITIGATION_DEP_POLICY lpBuffer;
+//		int success = 0;
+//
+//		success = GetProcessMitigationPolicy(
+//			hProcess,
+//			ProcessDEPPolicy,
+//			&lpBuffer,
+//			sizeof(lpBuffer));
+//
+//		if (success == FALSE)
+//		{
+//			continue;
+//			//ErrorExit(TEXT("GetProcessMitigationPolicy"));
+//		}
+//		if (lpBuffer.Enable == 1)
+//			process_list[i]->DEP_usage = L"Enabled";
+//		else
+//			process_list[i]->DEP_usage = L"Disabled";
+//		
+//		CloseHandle(hProcess);
+//	}
+//	return;
+//}
 
 void ProcessInfo::fill_ASLR_win7()
 {

@@ -76,7 +76,7 @@ BOOL ProcessInfoItem::change_integrity_level(int new_level)
 		(sizeof(tml) + GetLengthSid(pSid))))
 	{
 		return FALSE;
-//		ErrorExit(TEXT("SetTokenInformation"));
+		ErrorExit(TEXT("SetTokenInformation"));
 	}
 
 	CloseHandle(hToken);
@@ -141,7 +141,7 @@ BOOL ProcessInfoItem::change_privileges(LPCTSTR lpszPrivilege, BOOL bEnablePrivi
 		(PTOKEN_PRIVILEGES)NULL,
 		(PDWORD)NULL))
 	{
-//		ErrorExit(TEXT("AdjustTokenPrivileges"));
+		ErrorExit(TEXT("AdjustTokenPrivileges"));
 		return FALSE;
 	}
 
