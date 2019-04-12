@@ -1,10 +1,30 @@
 # OwnWindowsProcessExplorer
+## Description:
+This is a simple process explorer for Windows, written only with C++ and Qt and using Windows API.
+It has basic process explorer features:
+1. Showing name of process, it's type, DEP and ASLR usage.
+2. Allows to change integrity level
+3. Allows to change privileges
+Also it can be used to show and change files/folders information:
+1. ACL of file or folder
+2. File/folder owner
+3. Integrity level
 
+# Screenshots:
+![alt text](screens/main_window.png "Main window of process explorer")
+
+![alt text](screens/security_dialog.png "Dialog for changing process properties")
+
+![alt text](screens/file_dialog.png "File/Folder dialog")
+
+![alt text](screens/file_edit_dialog.png "File/Folder edditing dialog")
+
+---
+
+## Description in Russian:
 Peter the Great St.Petersburg Polytechnic University, 4th grade.
 
 Lab 4.
-
-## Description in Russian:
 
 Цель работы
 Исследование архитектуры подсистемы безопасности и механизмов контроля доступа ОС Windows
