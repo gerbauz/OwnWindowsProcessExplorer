@@ -1,6 +1,6 @@
 # OwnWindowsProcessExplorer
 
-Peter the Great St.Petersburg Polytechnic University, 4th grade.
+Peter the Great St.Petersburg Polytechnic University, 3rd grade.
 
 Lab 4.
 
