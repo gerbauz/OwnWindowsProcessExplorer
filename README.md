@@ -2,9 +2,10 @@
 ## Description:
 This is a simple process explorer for Windows, written only with C++ and Qt and using Windows API.
 It has basic process explorer features:
-1. Showing name of process, it's type, DEP and ASLR usage.
+1. Showing name of process, it's type, DEP and ASLR usage and DLLs used by the process.
 2. Allows to change integrity level
 3. Allows to change privileges
+
 Also it can be used to show and change files/folders information:
 1. ACL of file or folder
 2. File/folder owner
