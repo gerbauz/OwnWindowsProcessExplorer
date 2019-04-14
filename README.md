@@ -23,7 +23,7 @@ Also it can be used to show and change files/folders information:
 ---
 
 ## Description in Russian:
-Peter the Great St.Petersburg Polytechnic University, 4th grade.
+Peter the Great St.Petersburg Polytechnic University, 3rd grade.
 
 Lab 4.
 
